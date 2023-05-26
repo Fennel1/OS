@@ -17,11 +17,16 @@ private:
     int blockNum_ = TOTAL_GROUP_SIZE;      // 磁盘块总数
     int free_blockNum_ = TOTAL_GROUP_SIZE; // 空闲磁盘块数
 
-    INodeList inodeList_;   // i结点表
+    INodeList iNodeList_;   // i结点表
     SuperGroup superGroup_; // 组
 
 public:
     SuperBlock();
+
+    bool createFile(std::string filename, Directory* cur_dir); // 创建文件
+    void deleteFile(std::string filename, Directory* cur_dir); // 删除文件
+    void createDir(std::string dirname, INode &dir, Directory* cur_dir, int pos); // 创建目录
+    void deleteDir(std::string dirname, INode &dir, Directory* cur_dir, int pos); // 删除目录
 };
 
 class FileSystem {
