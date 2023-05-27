@@ -1,4 +1,5 @@
 #include <string>
+#include <math.h>
 #include "directory.h"
 #include "memory.h"
 #include "settings.h"
@@ -33,7 +34,7 @@ public:
     void updateFileSize(); // 更新文件大小
     int getSize();  // 获取文件大小
     int getBlockNum();  // 获取文件所占磁盘块数
-    // int differ();   // 文件变化情况
+    int differ();   // 文件变化情况
     int freeBlock();    // 释放文件占用的磁盘块
     bool addBlock(int id);   // 添加磁盘块
     std::string getUserName();  // 获取用户名

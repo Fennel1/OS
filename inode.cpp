@@ -68,6 +68,18 @@ bool INode::addBlock(int id) {
     return false;
 }
 
+int INode::differ()
+{
+    int t;
+    if(type_ == 1){
+        t = sizeof(dir_) - length_;
+    }
+    else{
+        t = sizeof(content_) - length_;
+    }
+    return (int)std::ceil((double)t / (double)BLOCK_SIZE);
+}
+
 std::string INode::getUserName() {
     return username_;
 }

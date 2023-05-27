@@ -28,9 +28,9 @@ public:
 class Users{
 private:
     int userListSize = 0;
-    std::string curr_user_ = "";
 
 public:
+    std::string curr_user_ = "";
     std::vector<User> userList_;
 
     Users() = default;
