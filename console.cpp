@@ -220,6 +220,16 @@ void Console::run() {
             }
             // TODO 支持递归删除目录 
         }
+        else if (args[0] == "login"){
+        }
+        else if (args[0] == "logout"){
+        }
+        else if (args[0] == "switch"){
+        }
+        else if (args[0] == "format"){
+        }
+        else if (args[0] == "rename"){
+        }
         else {
             std::cout << "Error: " << args[0] << " is not a command." << std::endl;
             continue;
