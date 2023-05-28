@@ -6,25 +6,25 @@
 #define RAM_H
 
 
-class INodeListInRam {
-private:
-    const int capacity_ = INODET_IN_RAM; // 内存中i结点表容量
-    int size_ = 0; // 内存中i结点表大小
-    INode iNodeList_[INODET_IN_RAM]; // 内存中i结点表
-    int iNodeNum_[INODET_IN_RAM];    
-    int fileLock_[INODET_IN_RAM];    // 文件锁 1-读锁 2-写锁
+// class INodeListInRam {
+// private:
+//     const int capacity_ = INODET_IN_RAM; // 内存中i结点表容量
+//     int size_ = 0; // 内存中i结点表大小
+//     INode iNodeList_[INODET_IN_RAM]; // 内存中i结点表
+//     int iNodeNum_[INODET_IN_RAM];    
+//     int fileLock_[INODET_IN_RAM];    // 文件锁 1-读锁 2-写锁
 
-public:
-    INodeListInRam();
-    int getFreeINode(); // 获取空闲i结点
-    bool loadINode(int id, INode iNode); // 加载i结点
-    INode freeINode(int id); // 释放i结点
-    int findINode(int id);  // 查找i结点对应下标
-    INode& getINode(int id); // 获取i结点
-    // bool updateINodeInfo(int id);    // 更新i结点信息
-    // bool saveINodes(); // 保存i结点
-    bool setLock(std::string username, int lock, int id); // 设置锁
-};
+// public:
+//     INodeListInRam();
+//     int getFreeINode(); // 获取空闲i结点
+//     bool loadINode(int id, INode iNode); // 加载i结点
+//     INode freeINode(int id); // 释放i结点
+//     int findINode(int id);  // 查找i结点对应下标
+//     INode& getINode(int id); // 获取i结点
+//     // bool updateINodeInfo(int id);    // 更新i结点信息
+//     // bool saveINodes(); // 保存i结点
+//     bool setLock(std::string username, int lock, int id); // 设置锁
+// };
 
 class FileOpenItem {
 private:

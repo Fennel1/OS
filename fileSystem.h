@@ -33,7 +33,7 @@ public:
 class FileSystem {
 public:
     SuperBlock superBlock;  // 超级块
-    INodeListInRam iNodeListInRam;  // 内存中i结点表
+    INodeList iNodeList;  // 内存中i结点表
 
     Users users;
 

@@ -24,17 +24,21 @@ int NormalIndex::getIndex(int n) {
     return indexes_[n];
 }
 
-bool NormalIndex::addIndex(int id) {
-    if (size_ == capacity_ || id < 0) {
+bool NormalIndex::addIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
         return false;
     }
-    indexes_.push_back(id);
+    indexes_.push_back(block_id);
     size_++;
     return true;
 }
 
 int NormalIndex::getSize() const {
     return size_;
+}
+
+int NormalIndex::getCapacity() const {
+    return capacity_;
 }
 
 bool NormalIndex::dropIndex(int n) {
@@ -48,16 +52,6 @@ bool NormalIndex::dropIndex(int n) {
     return true;
 }
 
-int NormalIndex::dropIndex() {
-    if (size_ == 0) {
-        return -1;
-    }
-    int id = indexes_.back();
-    indexes_.pop_back();
-    size_--;
-    return id;
-}
-
 NormalIndex& NormalIndex::getNextIndex(int n) {
     return indexTables_[n];
 }
@@ -66,8 +60,7 @@ bool NormalIndex::addNextIndex() {
     if (size_ == capacity_) {
         return false;
     }
-    NormalIndex index(sign_-1);
-    indexTables_.push_back(index);
+    indexTables_.push_back(NormalIndex(sign_-1));
     size_++;
     return true;
 }
@@ -80,15 +73,6 @@ bool NormalIndex::dropNextIndex(int n) {
         indexTables_.pop_back();
     }
     size_ -= n;
-    return true;
-}
-
-bool NormalIndex::dropNextIndex() {
-    if (size_ == 0) {
-        return false;
-    }
-    indexTables_.pop_back();
-    size_--;
     return true;
 }
 
@@ -106,7 +90,7 @@ std::vector<int> NormalIndex::getIndexes() const {
     return indexes_;
 }
 
-MixIndex::MixIndex() : oneIndirectIndex(0), twoIndirectIndex(1), threeIndirectIndex(2) { }
+MixIndex::MixIndex() : oneIndirectIndex(1), twoIndirectIndex(2), threeIndirectIndex(3) { }
 
 MixIndex::MixIndex(const MixIndex& thx) {
     size_ = thx.size_;
@@ -125,76 +109,77 @@ MixIndex& MixIndex::operator=(const MixIndex& thx) {
     return *this;
 }
 
-bool MixIndex::addDirectIndex(int id) {
-    if (size_ == capacity_ || id < 0) {
+bool MixIndex::addDirectIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
         return false;
     }
-    indexes_.push_back(id);
+    indexes_.push_back(block_id);
     size_++;
     return true;
 }
 
-bool MixIndex::addOneIndirectIndex(int id) {
-    if (size_ == capacity_ || id < 0) {
+bool MixIndex::addOneIndirectIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
         return false;
     }
-    if (oneIndirectIndex.addIndex(id)) {
+    if (oneIndirectIndex.addIndex(block_id)) {
         size_++;
         return true;
     }
     return false;
 }
 
-bool MixIndex::addTwoIndirectIndex(int id) {
-    if (size_ == capacity_ || id < 0) {
+bool MixIndex::addTwoIndirectIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
         return false;
     }
 
-    // 计算超出前两部分索引的数量
-    int n = size_ - BASIC_IDX - IDXT_SIZE;
-    if(n % IDXT_SIZE == 0){ //正好填满前一个二次间址索引块
-        twoIndirectIndex.addNextIndex(); // 新建一个索引块
+    NormalIndex &one = twoIndirectIndex.getNextIndex(twoIndirectIndex.getSize() - 1);
+    if (one.getSize() == one.getCapacity()) { // 一次间址索引块已满
+        twoIndirectIndex.addNextIndex(); // 新建一个一次间址索引块
+        one = twoIndirectIndex.getNextIndex(twoIndirectIndex.getSize() - 1);
     }
 
-    //获得当前未满的二次间址索引块
-    NormalIndex &t = twoIndirectIndex.getNextIndex(n / IDXT_SIZE);
-    t.addIndex(id);
+    one.addIndex(block_id);
     size_++;
     return true;
 }
 
-bool MixIndex::addThreeIndirectIndex(int id) {
-    // 计算超出前三部分索引的数量
-    int n = size_ - BASIC_IDX - IDXT_SIZE - ONE_IDXT_SIZE;
-    if(n % ONE_IDXT_SIZE == 0){ // 正好填满前一个二次间址索引块
-        threeIndirectIndex.addNextIndex(); // 新建一个二次间址索引块
+bool MixIndex::addThreeIndirectIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
+        return false;
     }
 
-    // 获得当前未满的二次间址索引块
-    NormalIndex &t = threeIndirectIndex.getNextIndex(n / ONE_IDXT_SIZE);
-    if(n % IDXT_SIZE == 0){ // 正好填满一个三次间址索引块
-        t.addNextIndex(); // 新建一个三次间址索引块
+    NormalIndex &two = threeIndirectIndex.getNextIndex(threeIndirectIndex.getSize() - 1);
+    NormalIndex &one = two.getNextIndex(two.getSize() - 1);
+    if (one.getSize() == one.getCapacity() && two.getSize() == two.getCapacity()) { // 二次间址索引块已满, 一次间址索引块已满
+        threeIndirectIndex.addNextIndex();
+        two = threeIndirectIndex.getNextIndex(threeIndirectIndex.getSize() - 1);
+        two.addNextIndex();
+        one = two.getNextIndex(two.getSize() - 1);
+    } else if (one.getSize() == one.getCapacity()) {    // 二次间址索引块未满, 一次间址索引块已满
+        two.addNextIndex();
+        one = two.getNextIndex(two.getSize() - 1);
     }
 
-    // 获得当前未满的三次间址索引块
-    NormalIndex &nxt = t.getNextIndex((n % ONE_IDXT_SIZE) / IDXT_SIZE);
-    nxt.addIndex(id);
+    one.addIndex(block_id);
     size_++;
     return true;
 }
 
-bool MixIndex::addIndex(int id) {
-    if (size_ == capacity_ || id < 0) {
+bool MixIndex::addIndex(int block_id) {
+    if (size_ == capacity_ || block_id < 0) {
         return false;
     }
-    if (id < BASIC_IDX) {
-        return addDirectIndex(id);
-    } else if (id < BASIC_IDX + IDXT_SIZE) {
-        return addOneIndirectIndex(id);
-    } else if (id < BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE) {
-        return addTwoIndirectIndex(id);
-    } else if (id < BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE + TWO_IDXT_SIZE) {
-        return addThreeIndirectIndex(id);
+
+    if (size_ < BASIC_IDX) { // 10
+        return addDirectIndex(block_id);
+    } else if (size_ < BASIC_IDX + IDXT_SIZE) { // 10 + 16 = 26
+        return addOneIndirectIndex(block_id);
+    } else if (size_ < BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE) { // 10 + 16 + 256 = 282
+        return addTwoIndirectIndex(block_id);
+    } else if (size_ < BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE + TWO_IDXT_SIZE) { // 10 + 16 + 256 + 4096 = 4382
+        return addThreeIndirectIndex(block_id);
     }
     return false;
 }
@@ -203,46 +188,47 @@ int MixIndex::getSize() const {
     return size_;
 }
 
-int MixIndex::dropDirectIndex() {
-    int id = indexes_.back();
+bool MixIndex::dropDirectIndex() {
     indexes_.pop_back();
     size_--;
-    return id;
+    return true;
 }
 
-int MixIndex::dropOneIndirectIndex() {
-    int id = oneIndirectIndex.dropIndex();
+bool MixIndex::dropOneIndirectIndex() {
+    oneIndirectIndex.dropIndex(1);
     size_--;
-    return id;
+    return true;
 }
 
-int MixIndex::dropTwoIndirectIndex() {
-    int n = size_ - BASIC_IDX - IDXT_SIZE - 1;
-    int id = twoIndirectIndex.getNextIndex(n / IDXT_SIZE).dropIndex();
+bool MixIndex::dropTwoIndirectIndex() {
+    NormalIndex &one = twoIndirectIndex.getNextIndex(twoIndirectIndex.getSize() - 1);
+    one.dropIndex(1);
+    if (one.getSize() == 0) {
+        twoIndirectIndex.dropNextIndex(1);
+    }
     size_--;
-    if ((n+1) % IDXT_SIZE == 1) {
-        twoIndirectIndex.dropNextIndex();
-    }
-    return id;
+    return true;
 }
 
-int MixIndex::dropThreeIndirectIndex() {
-    int n = size_ - BASIC_IDX - IDXT_SIZE - ONE_IDXT_SIZE - 1;
-    int id = threeIndirectIndex.getNextIndex(n / ONE_IDXT_SIZE).getNextIndex((n % ONE_IDXT_SIZE) / IDXT_SIZE).dropIndex();
+bool MixIndex::dropThreeIndirectIndex() {
+    NormalIndex &two = threeIndirectIndex.getNextIndex(threeIndirectIndex.getSize() - 1);
+    NormalIndex &one = two.getNextIndex(two.getSize() - 1);
+    one.dropIndex(1);
+    if (one.getSize() == 0) {
+        two.dropNextIndex(1);
+    }
+    if (two.getSize() == 0) {
+        threeIndirectIndex.dropNextIndex(1);
+    }
     size_--;
-    if (((n+1) % ONE_IDXT_SIZE) % IDXT_SIZE == 1) {
-        threeIndirectIndex.getNextIndex(n / ONE_IDXT_SIZE).dropNextIndex();
-    }
-    if ((n+1) % ONE_IDXT_SIZE == 1) {
-        threeIndirectIndex.dropNextIndex();
-    }
-    return id;
+    return true;
 }
 
-int MixIndex::dropIndex() {
+bool MixIndex::dropIndex() {
     if (size_ == 0) {
-        return -1;
+        return false;
     }
+
     if (size_ <= BASIC_IDX) {
         return dropDirectIndex();
     } else if (size_ <= BASIC_IDX + IDXT_SIZE) {
@@ -252,7 +238,7 @@ int MixIndex::dropIndex() {
     } else if (size_ <= BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE + TWO_IDXT_SIZE) {
         return dropThreeIndirectIndex();
     }
-    return -1;
+    return false;
 }
 
 void MixIndex::clear() {
@@ -262,6 +248,7 @@ void MixIndex::clear() {
     twoIndirectIndex.clear();
     threeIndirectIndex.clear();
 }
+
 std::vector<int> MixIndex::getIndexes() {
     std::vector<int> res;
     for (int i = 0; i < size_; i++) {

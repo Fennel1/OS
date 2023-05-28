@@ -18,7 +18,7 @@ int GroupLeader::getSize() const {
     return size_;
 }
 
-int GroupLeader::getBlockId() {
+int GroupLeader::getFreeBlock() {
     if (size_ == 0) {
         return -1;
     }
@@ -28,7 +28,7 @@ int GroupLeader::getBlockId() {
     return block_id;
 }
 
-bool GroupLeader::addBlock(int block_id) {
+bool GroupLeader::addBlockToGroup(int block_id) {
     if (size_ == capacity_) {
         return false;
     }
@@ -36,10 +36,6 @@ bool GroupLeader::addBlock(int block_id) {
     groups_.push(block_id);
     return true;
 }
-
-// GroupLeader* getLeader() {
-//     return this;
-// }
 
 GroupLeader* GroupLeader::getNextLeader() const {
     return next_leader_;
@@ -58,15 +54,15 @@ int SuperGroup::getFreeGroup() {
         curr_group_ = curr_group_->getNextLeader();
     }
     free_groupNum_--;
-    return curr_group_->getBlockId();
+    return curr_group_->getFreeBlock();
 }
 
-bool SuperGroup::addBlock(int block_id) {
+bool SuperGroup::addBlockToGroup(int block_id) {
     if (curr_group_->getSize() == curr_group_->getCapacity()) {
         GroupLeader *new_leader = new GroupLeader(*curr_group_);
-        curr_group_ = new GroupLeader(curr_group_);
+        curr_group_ = new GroupLeader(new_leader);
     }
-    curr_group_->addBlock(block_id);
+    curr_group_->addBlockToGroup(block_id);
     free_groupNum_++;
     return true;
 }
@@ -79,16 +75,14 @@ void SuperGroup::init() {
     for (int i=0; i<TOTAL_GROUP_SIZE/GROUP_SIZE; i++) {
         GroupLeader *group_leader;
         if (i == 0){
+            group_leader = curr_group_ = new GroupLeader();
+        } else {
             group_leader = new GroupLeader();
-            curr_group_ = group_leader;
-        }
-        else{
-            GroupLeader *new_leader = new GroupLeader();
-            group_leader->setNextLeader(new_leader);
-            group_leader = new_leader;
+            group_leader->setNextLeader(curr_group_->getNextLeader());
+            curr_group_->setNextLeader(group_leader);
         }
         for (int j=GROUP_SIZE; j>=1; j--){
-            group_leader->addBlock(i*GROUP_SIZE+j);
+            group_leader->addBlockToGroup(i*GROUP_SIZE+j);
         }
     }
 }

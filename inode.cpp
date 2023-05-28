@@ -6,8 +6,8 @@ INode::INode(const INode& thx) {
     username_ = thx.username_;
     type_ = thx.type_;
     nlink_ = thx.nlink_;
-    length_ = thx.length_;
-    block_size_ = thx.block_size_;
+    file_size_ = thx.file_size_;
+    block_num_ = thx.block_num_;
     set_time_ = thx.set_time_;
     mod_time_ = thx.mod_time_;
     indexTable_ = thx.indexTable_;
@@ -19,8 +19,8 @@ INode::INode(std::string username, int type, int nlink, int length, int block_si
     username_ = username;
     type_ = type;
     nlink_ = nlink;
-    length_ = length;
-    block_size_ = block_size;
+    file_size_ = file_size_;
+    block_num_ = block_num_;
     set_time_ = set_time;
     mod_time_ = mod_time;
     content_ = content;
@@ -30,8 +30,8 @@ INode& INode::operator=(const INode& thx) {
     username_ = thx.username_;
     type_ = thx.type_;
     nlink_ = thx.nlink_;
-    length_ = thx.length_;
-    block_size_ = thx.block_size_;
+    file_size_ = thx.file_size_;
+    block_num_ = thx.block_num_;
     set_time_ = thx.set_time_;
     mod_time_ = thx.mod_time_;
     indexTable_ = thx.indexTable_;
@@ -42,27 +42,35 @@ INode& INode::operator=(const INode& thx) {
 
 void INode::updateFileSize() {
     if (type_ == 0) {
-        length_ = sizeof(content_);
+        file_size_ = sizeof(content_);
     }
     else{
-        length_ = sizeof(dir_);
+        file_size_ = sizeof(dir_);
     }
 }
 
 int INode::getSize() {
-    return length_;
+    return file_size_;
 }
 
 int INode::getBlockNum() {
-    return block_size_;
+    return block_num_;
 }
 
-int INode::freeBlock() {
-    return indexTable_.dropIndex();
+bool INode::freeBlock() {
+    if (block_num_ == 0) {
+        return false;
+    }
+    if (indexTable_.dropIndex()) {
+        block_num_--;
+        return true;
+    }
+    return false;
 }
 
-bool INode::addBlock(int id) {
-    if (indexTable_.addIndex(id)) {
+bool INode::addBlock(int block_id) {
+    if (indexTable_.addIndex(block_id)) {
+        block_num_++;
         return true;
     }
     return false;
@@ -70,14 +78,14 @@ bool INode::addBlock(int id) {
 
 int INode::differ()
 {
-    int t;
+    int cur_size = 0;
     if(type_ == 1){
-        t = sizeof(dir_) - length_;
+        cur_size = sizeof(dir_) - file_size_;
     }
     else{
-        t = sizeof(content_) - length_;
+        cur_size = sizeof(content_) - file_size_;
     }
-    return (int)std::ceil((double)t / (double)BLOCK_SIZE);
+    return (int)std::ceil((double)cur_size / (double)BLOCK_SIZE);
 }
 
 std::string INode::getUserName() {
@@ -88,8 +96,8 @@ void INode::clear() {
     username_ = "";
     type_ = -1;
     nlink_ = 0;
-    length_ = 0;
-    block_size_ = 0;
+    file_size_ = 0;
+    block_num_ = 0;
     set_time_ = "";
     mod_time_ = "";
     indexTable_.clear();
@@ -101,12 +109,8 @@ void INode::addLink() {
     nlink_++;
 }
 
-bool INode::deleteLink() {
+void INode::deleteLink() {
     nlink_--;
-    if (nlink_ == 0) {
-        return true;
-    }
-    return false;
 }
 
 int INode::getLink() {
@@ -124,10 +128,16 @@ bool INode::inodeIsAuthor(std::string username) {
     return false;
 }
 
+void INode::setModTime(std::string mod_time) {
+    mod_time_ = mod_time;
+}
+
 int INodeList::getFreeINode() {
+    if (used_size_ == INODE_NUM) {
+        return -1;
+    }
     for (int i = 0; i < INODE_NUM; i++) {
         if (iNodeBitMap[i] == false) {
-            // iNodeBitMap[i] = true;
             return i;
         }
     }
@@ -144,14 +154,22 @@ bool INodeList::addINode(INode inode, int pos) {
     return true;
 }
 
-void INodeList::deleteINode(int pos) {
+bool INodeList::deleteINode(int pos) {
+    if (iNodeBitMap[pos] == false) {
+        return false;
+    }
     iNodeBitMap[pos] = false;
     inode_[pos].clear();
     used_size_--;
+    return true;
 }
 
-void INodeList::updateINode(int pos, INode inode) {
+bool INodeList::updateINode(int pos, INode inode) {
+    if (iNodeBitMap[pos] == false) {
+        return false;
+    }
     inode_[pos] = inode;
+    return true;
 }
 
 INode& INodeList::getINode(int pos) {
