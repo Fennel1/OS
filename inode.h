@@ -42,6 +42,7 @@ public:
     int getType();  // 获取文件类型
     bool inodeIsAuthor(std::string username); // 判断i结点是否属于某用户
     void setModTime(std::string mod_time); // 设置修改时间
+    Directory* getDir();    // 获取目录
 };
 
 class INodeList {
@@ -49,6 +50,8 @@ public:
     int used_size_ = 0;     // 已使用的i结点数量
     INode inode_[INODE_NUM];    // i结点
     bool iNodeBitMap_[INODE_NUM];    // i结点位图
+
+    INodeList();
 
     int getFreeINode(); // 获取空闲i结点
     bool addINode(INode inode, int pos); // 添加i结点

@@ -78,14 +78,14 @@ bool INode::addBlock(int block_id) {
 
 int INode::differ()
 {
-    int cur_size = 0;
+    int diff = 0;
     if(type_ == 1){
-        cur_size = sizeof(dir_) - file_size_;
+        diff = sizeof(dir_) - file_size_;
     }
     else{
-        cur_size = sizeof(content_) - file_size_;
+        diff = sizeof(content_) - file_size_;
     }
-    return (int)std::ceil((double)cur_size / (double)BLOCK_SIZE);
+    return (int)std::ceil((double)diff / (double)BLOCK_SIZE);
 }
 
 std::string INode::getUserName() {
@@ -130,6 +130,17 @@ bool INode::inodeIsAuthor(std::string username) {
 
 void INode::setModTime(std::string mod_time) {
     mod_time_ = mod_time;
+}
+
+Directory *INode::getDir() {
+    return &dir_;
+}
+
+INodeList::INodeList() {
+    used_size_ = 0;
+    for (int i = 0; i < INODE_NUM; i++) {
+        iNodeBitMap[i] = false;
+    }
 }
 
 int INodeList::getFreeINode() {

@@ -1,89 +1,24 @@
 #include "ram.h"
 
-INodeListInRam::INodeListInRam() {
-    for (int i = 0; i < capacity_; ++i) {
-        iNodeNum_[i] = -1;
-        fileLock_[i] = 0;
-    }
-}
 
-int INodeListInRam::getFreeINode() {
-    for (int i = 0; i < capacity_; ++i) {
-        if (iNodeList_[i].getLink() == 0){
-            return i;
-        }
-    }
-    return -1;
-}
-
-bool INodeListInRam::loadINode(int id, INode iNode) {
-    int i = getFreeINode();
-    if (i == -1){
-        return false;
-    }
-    iNodeList_[i] = iNode;
-    iNodeNum_[i] = id;
-    ++size_;
-    return true;
-}
-
-INode INodeListInRam::freeINode(int id) {
-    int i = findINode(id);
-    if (i == -1){
-        return INode();
-    }
-    INode iNode = iNodeList_[i];
-    iNodeList_[i].clear();
-    iNodeNum_[i] = -1;
-    fileLock_[i] = 0;
-    --size_;
-    return iNode;
-}
-
-INode& INodeListInRam::getINode(int id) {
-    int i = findINode(id);
-    return iNodeList_[i];
-}
-
-int INodeListInRam::findINode(int id) {
-    for (int i = 0; i < capacity_; ++i) {
-        if (iNodeNum_[i] == id){
-            return i;
-        }
-    }
-    return -1;
-}
-
-bool INodeListInRam::setLock(std::string username, int lock, int id) {
-    if (lock < 0 || lock > 2){
-        return false;
-    }
-    int i = findINode(id);
-    if (iNodeList_[i].getUserName() == username){
-        fileLock_[i] = lock;
-        return true;
-    }
-    return false;
-}
-
-FileOpenItem::FileOpenItem(unsigned offSet, int flags, int mode, int id) {
+FileOpenItem::FileOpenItem(unsigned offSet, int sign, int mode, int inode_id) {
     this->offSet = offSet;
-    this->flags = flags;
+    this->sign = sign;
     this->mode = mode;
-    this->id = id;
+    this->inode_id = inode_id;
     linkN = 1;
 }
 
 FileOpenItem::FileOpenItem(const FileOpenItem& thx) {
     offSet = thx.offSet;
-    flags = thx.flags;
+    sign = thx.sign;
     mode = thx.mode;
-    id = thx.id;
+    inode_id = thx.inode_id;
     linkN = thx.linkN;
 }
 
-int FileOpenItem::getId() {
-    return id;
+int FileOpenItem::getINodeId() {
+    return inode_id;
 }
 
 int FileOpenItem::getOffSet() {
@@ -97,9 +32,9 @@ bool FileOpenItem::setOffSet(unsigned offSet) {
 
 void FileOpenItem::clear() {
     offSet = 0;
-    flags = 0;
+    sign = 0;
     mode = 0;
-    id = -1;
+    inode_id = -1;
     linkN = 0;
 }
 
@@ -122,15 +57,13 @@ int FileOpenItem::getMode() {
 
 void FileOpenList::clear() {
     for (int i = 0; i < capacity_; ++i) {
-        if (fileOpenList_[i].getLinkN() != 0){
-            fileOpenList_[i].clear();
-        }
+        fileOpenList_[i].clear();
     }
-    fileOpenSize_ = 0;
+    size_ = 0;
 }
 
 int FileOpenList::getSize() {
-    return fileOpenSize_;
+    return size_;
 }
 
 int FileOpenList::getOffSet(int id) {
@@ -150,17 +83,17 @@ bool FileOpenList::deleteItem(int id) {
        return false;
     }
     fileOpenList_[id].clear();
-    --fileOpenSize_;
+    --size_;
     return true;
 }
 
-int FileOpenList::addItem(unsigned offset, int flags, int mode, int id)
+int FileOpenList::addItem(unsigned offset, int sign, int mode, int inode_id)
 {
     int i = getFreeItem();
     if(i == -1)
         return -1;
-    fileOpenList_[i] = FileOpenItem(offset, flags, mode, id);
-    fileOpenSize_++;
+    fileOpenList_[i] = FileOpenItem(offset, sign, mode, inode_id);
+    size_++;
     return i; // 返回系统文件打开表的下标
 }
 
@@ -178,7 +111,7 @@ int FileOpenList::getItemInodeId(int id) {
         return -1;
     }
     else{
-        return fileOpenList_[id].getId();
+        return fileOpenList_[id].getINodeId();
     }
 }
 
@@ -195,41 +128,38 @@ bool FileOpenList::deleteLink(int id) {
         return false;
     }
     fileOpenList_[id].deleteLink();
-    if (fileOpenList_[id].getLinkN() == 0){
-        deleteItem(id);
-        return true;
-    }
-    return false;
+    // if (fileOpenList_[id].getLinkN() == 0){
+    //     deleteItem(id);
+    //     return true;
+    // }
+    return true;
 }
 
-UserOpenItem::UserOpenItem(int descriptor, int id) {
-    this->descriptor = descriptor;
+int FileOpenList::getLinkN(int id) {
+    return fileOpenList_[id].getLinkN();
+}
+
+UserOpenItem::UserOpenItem(int inode_id, int id) {
+    this->inode_id = inode_id;
     this->id = id;
 }
 
 void UserOpenItem::clear() {
-    descriptor = -1;
+    inode_id = -1;
     id = -1;
+}
+
+int UserOpenItem::getINodeId() {
+    return inode_id;
 }
 
 int UserOpenItem::getId() {
     return id;
 }
 
-int UserOpenItem::getDescriptor() {
-    return descriptor;
-}
-
-void UserOpenItem::set(int descriptor, int id) {
-    this->descriptor = descriptor;
+void UserOpenItem::set(int inode_id, int id) {
+    this->inode_id = inode_id;
     this->id = id;
-}
-
-bool UserOpenItem::check(){
-    if (descriptor < 0){
-        return false;
-    }
-    return true;
 }
 
 UserOpenList::UserOpenList(std::string username) {
@@ -239,7 +169,7 @@ UserOpenList::UserOpenList(std::string username) {
 void UserOpenList::clear() {
     username_ = "";
     for (int i = 0; i < MAX_USER_FD; ++i) {
-        iNodeToFile_[i].clear();
+        open_list_[i].clear();
     }
 }
 
@@ -248,7 +178,7 @@ int UserOpenList::getFileId(int iNodeid) {
     if (id == -1){
         return -1;
     }
-    return iNodeToFile_[id].getId();
+    return open_list_[id].getId();
 }
 
 bool UserOpenList::addItem(int iNodeId, int fileId){
@@ -256,7 +186,7 @@ bool UserOpenList::addItem(int iNodeId, int fileId){
     if (id == -1){
         return false;
     }
-    iNodeToFile_[id].set(iNodeId, fileId);
+    open_list_[id].set(iNodeId, fileId);
     return true;
 }
 
@@ -265,13 +195,13 @@ bool UserOpenList::deleteItem(int iNodeId){
     if (id == -1){
         return false;
     }
-    iNodeToFile_[id].clear();
+    open_list_[id].clear();
     return true;
 }
 
 int UserOpenList::findId(int iNodeId) {
     for (int i = 0; i < MAX_USER_FD; ++i) {
-        if (iNodeToFile_[i].getDescriptor() == iNodeId){
+        if (open_list_[i].getINodeId() == iNodeId){
             return i;
         }
     }
@@ -280,7 +210,7 @@ int UserOpenList::findId(int iNodeId) {
 
 int UserOpenList::findFreeItemId() {
     for (int i = 0; i < MAX_USER_FD; ++i) {
-        if (iNodeToFile_[i].check() == false){
+        if (open_list_[i].getId() == -1){
             return i;
         }
     }

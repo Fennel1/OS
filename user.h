@@ -6,20 +6,20 @@
 
 class User{
 private:
-    Directory* cur_dir_ = nullptr;
+    int inode_id_ = -1; // inode号
     std::string username_ = "";
     std::string password_ = "";
-    bool state_ = false;
+    bool state_ = false; // 0: logout, 1: login
 public:
     User() = default;
-    User(std::string username, std::string password, Directory* cur_dir=nullptr);
+    User(std::string username, std::string password, int inode_id = -1);
 
     std::string getUserName();
     std::string getPassword();
     bool login(std::string username, std::string password);
 
-    Directory* getCurDir();
-    void setCurDir(Directory* cur_dir);
+    int getInodeId();
+    void setInodeId(int inode_id);
     bool check();
     void logOut();
     void clear();
@@ -27,7 +27,6 @@ public:
 
 class Users{
 private:
-    int userListSize = 0;
 
 public:
     std::string curr_user_ = "";
@@ -42,8 +41,8 @@ public:
     int findUser(std::string username);
     bool switchUser(std::string username);
     void logOut();
-    Directory* getCurDir();
-    void setCurDir(Directory* cur_dir);
+    int getInodeId();
+    void setInodeId(int inode_id);
     bool check();
 };
 

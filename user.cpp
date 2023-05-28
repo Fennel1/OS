@@ -1,9 +1,9 @@
 #include "user.h"
 
-User::User(std::string username, std::string password, Directory* cur_dir) {
+User::User(std::string username, std::string password, int inode_id = -1) {
     username_ = username;
     password_ = password;
-    cur_dir_ = cur_dir;
+    inode_id_ = inode_id;
 }
 
 std::string User::getUserName() {
@@ -22,12 +22,12 @@ bool User::login(std::string username, std::string password) {
     return false;
 }
 
-Directory* User::getCurDir() {
-    return cur_dir_;
+int User::getInodeId() {
+    return inode_id_;
 }
 
-void User::setCurDir(Directory* cur_dir) {
-    cur_dir_ = cur_dir;
+void User::setInodeId(int inode_id) {
+    inode_id_ = inode_id;
 }
 
 bool User::check() {
@@ -41,7 +41,7 @@ void User::logOut() {
 void User::clear() {
     username_ = "";
     password_ = "";
-    cur_dir_ = nullptr;
+    inode_id_ = -1;
     state_ = false;
 }
 
@@ -50,7 +50,7 @@ void Users::readUserList() {
 }
 
 bool Users::isExist(std::string username) {
-    for (int i = 0; i < userListSize; i++){
+    for (int i = 0; i < userList_.size(); i++){
         if (userList_[i].getUserName() == username){
             return true;
         }
@@ -61,7 +61,6 @@ bool Users::isExist(std::string username) {
 void Users::createUser(std::string username, std::string password) {
     if (!isExist(username)){
         userList_.push_back(User(username, password));
-        userListSize++;
     }
 }
 
@@ -70,17 +69,22 @@ void Users::saveUserList() {
 }
 
 bool Users::login(std::string username, std::string password) {
-    for (int i = 0; i < userListSize; i++){
-        if (userList_[i].login(username, password)){
-            curr_user_ = username;
-            return true;
+    for (int i = 0; i < userList_.size(); i++){
+        if (userList_[i].getUserName() == username){
+            if (!userList_[i].check()){
+                if (userList_[i].login(username, password)){
+                    curr_user_ = username;
+                    return true;
+                }
+            }
+            break;
         }
     }
     return false;
 }
 
 int Users::findUser(std::string username) {
-    for (int i = 0; i < userListSize; i++){
+    for (int i = 0; i < userList_.size(); i++){
         if (userList_[i].getUserName() == username){
             return i;
         }
@@ -109,20 +113,20 @@ void Users::logOut() {
     curr_user_ = "";
 }
 
-Directory* Users::getCurDir() {
+int Users::getInodeId() {
     int i = findUser(curr_user_);
     if (i == -1){
-        return nullptr;
+        return -1;
     }
-    return userList_[i].getCurDir();
+    return userList_[i].getInodeId();
 }
 
-void Users::setCurDir(Directory* cur_dir) {
+void Users::setInodeId(int inode_id) {
     int i = findUser(curr_user_);
     if (i == -1){
         return;
     }
-    userList_[i].setCurDir(cur_dir);
+    userList_[i].setInodeId(inode_id);
 }
 
 bool Users::check() {
