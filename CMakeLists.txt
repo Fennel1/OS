@@ -22,4 +22,8 @@ add_executable(os   main.cpp
                     ram.h
                     settings.h
                     user.cpp
-                    user.h )
+                    user.h
+                    man.cpp
+                    man.h
+                    window.cpp
+                    window.h )
