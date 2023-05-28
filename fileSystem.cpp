@@ -2,7 +2,7 @@
 
 SuperBlock::SuperBlock() {}
 
-void SuperBlock::createFile(std::string filename, Directory* cur_dir, std::string curr_user){
+void SuperBlock::createFile(std::string filename, Directory* curr_dir, std::string curr_user){
     // 获取空闲inode
     int inode_id = iNodeList_.getFreeINode();
     if (inode_id == -1){
@@ -10,10 +10,17 @@ void SuperBlock::createFile(std::string filename, Directory* cur_dir, std::strin
         return ;
     }
     // 判断是否有权限
-    if (!iNodeList_.inode_[inode_id].inodeIsAuthor(curr_user)){
+    int pid = curr_dir->getItemId(".");
+    if (!iNodeList_.inode_[pid].inodeIsAuthor(curr_user)){
         std::cout << "You are not the author!" << std::endl;
         return ;
     }
+    // 判断是否重复
+    if (curr_dir->getItemId(filename) != -1){
+        std::cout << "File already exists!" << std::endl;
+        return ;
+    }
+
     // 获取当前时间
     auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::stringstream ss;
@@ -23,16 +30,17 @@ void SuperBlock::createFile(std::string filename, Directory* cur_dir, std::strin
     // 创建inode, 并添加到inode表中
     iNodeList_.addINode(INode(curr_user, 0, 0, 0, 0, curr_time, curr_time, filename), inode_id);
     // 添加到目录中
-    cur_dir->addItem(filename, inode_id);
+    curr_dir->addItem(filename, inode_id);
 }
 
-void FileSystem::createFile(std::string filename) {
-    superBlock.createFile(filename, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
+void FileSystem::createFile(std::string filename, Directory* curr_dir) {
+    // superBlock.createFile(filename, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
+    superBlock.createFile(filename, curr_dir, users.curr_user_);
 }
 
-void SuperBlock::deleteFile(std::string filename, Directory* cur_dir, std::string curr_user){
+void SuperBlock::deleteFile(std::string filename, Directory* curr_dir, std::string curr_user){
     // 获取inode
-    int inode_id = cur_dir->getItemId(filename);
+    int inode_id = curr_dir->getItemId(filename);
     if (inode_id == -1){
         std::cout << "No such file!" << std::endl;
         return;
@@ -49,6 +57,7 @@ void SuperBlock::deleteFile(std::string filename, Directory* cur_dir, std::strin
     }
     // 删除inode
     if (iNodeList_.deleteINode(inode_id)){
+        curr_dir->deleteItem(filename);
         std::cout << "Delete file successfully!" << std::endl;
     }
     else{
@@ -56,11 +65,11 @@ void SuperBlock::deleteFile(std::string filename, Directory* cur_dir, std::strin
     }
 }
 
-void FileSystem::deleteFile(std::string filename) {
+void FileSystem::deleteFile(std::string filename, Directory* curr_dir) {
     superBlock.deleteFile(filename, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
 }
 
-void SuperBlock::createDir(std::string dirname, Directory* cur_dir, std::string curr_user){
+void SuperBlock::createDir(std::string dirname, Directory* curr_dir, std::string curr_user){
     // 获取空闲inode
     int inode_id = iNodeList_.getFreeINode();
     if (inode_id == -1){
@@ -68,8 +77,14 @@ void SuperBlock::createDir(std::string dirname, Directory* cur_dir, std::string 
         return ;
     }
     // 判断是否有权限
-    if (!iNodeList_.inode_[inode_id].inodeIsAuthor(curr_user)){
+    int pid = curr_dir->getItemId(".");
+    if (!iNodeList_.inode_[pid].inodeIsAuthor(curr_user)){
         std::cout << "You are not the author!" << std::endl;
+        return ;
+    }
+    // 判断是否重复
+    if (curr_dir->getItemId(dirname) != -1){
+        std::cout << "Directory already exists!" << std::endl;
         return ;
     }
     // 获取当前时间
@@ -81,16 +96,18 @@ void SuperBlock::createDir(std::string dirname, Directory* cur_dir, std::string 
     // 创建inode, 并添加到inode表中
     iNodeList_.addINode(INode(curr_user, 1, 0, 0, 0, curr_time, curr_time, dirname), inode_id);
     // 添加到目录中
-    cur_dir->addItem(dirname, inode_id);
+    curr_dir->addItem(dirname, inode_id);
+    iNodeList_.inode_[inode_id].getDir()->init(inode_id, pid);
 }
 
-void FileSystem::createDir(std::string dirname) {
-    superBlock.createDir(dirname, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
+void FileSystem::createDir(std::string dirname, Directory* curr_dir) {
+    // superBlock.createDir(dirname, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
+    superBlock.createDir(dirname, curr_dir, users.curr_user_);
 }
 
-void SuperBlock::deleteDir(std::string dirname, Directory* cur_dir, std::string curr_user){
+void SuperBlock::deleteDir(std::string dirname, Directory* curr_dir, std::string curr_user){
     // 获取inode
-    int inode_id = cur_dir->getItemId(dirname);
+    int inode_id = curr_dir->getItemId(dirname);
     if (inode_id == -1){
         std::cout << "No such directory!" << std::endl;
         return;
@@ -106,12 +123,13 @@ void SuperBlock::deleteDir(std::string dirname, Directory* cur_dir, std::string 
         return;
     }
     // 判断目录是否为空
-    if (iNodeList_.inode_[inode_id].dir_.getSize() != 0){
+    if (iNodeList_.inode_[inode_id].dir_.getSize() > 2){
         std::cout << "Directory is not empty!" << std::endl;
         return;
     }
     // 删除inode
     if (iNodeList_.deleteINode(inode_id)){
+        curr_dir->deleteItem(dirname);
         std::cout << "Delete directory successfully!" << std::endl;
     }
     else{
@@ -119,7 +137,7 @@ void SuperBlock::deleteDir(std::string dirname, Directory* cur_dir, std::string 
     }
 }
 
-void FileSystem::deleteDir(std::string dirname) { 
+void FileSystem::deleteDir(std::string dirname, Directory* curr_dir) { 
     superBlock.deleteDir(dirname, superBlock.iNodeList_.inode_[users.getInodeId()].getDir(), users.curr_user_);
 }
 
@@ -148,8 +166,8 @@ void FileSystem::cd(std::string dirname) {
     users.setInodeId(inode_id);
 }
 
-bool FileSystem::openFile(std::string filename, int mode, int sign) {
-    Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
+bool FileSystem::openFile(std::string filename, int mode, int sign, Directory* curr_dir) {
+    // Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
     int inode_id = curr_dir->getItemId(filename);
     if (inode_id == -1){
         std::cout << "No such file!" << filename << std::endl;
@@ -194,8 +212,8 @@ bool FileSystem::openFile(std::string filename, int mode, int sign) {
     }
 }
 
-bool FileSystem::closeFile(std::string filename){
-    Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
+bool FileSystem::closeFile(std::string filename, Directory* curr_dir){
+    // Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
     int inode_id = curr_dir->getItemId(filename);
     if (inode_id == -1){
         std::cout << "No such file!" << filename << std::endl;
@@ -211,6 +229,11 @@ bool FileSystem::closeFile(std::string filename){
         std::cout << "It's a directory!" << std::endl;
         return false;
     }
+    // 判断是否打开
+    if (userOpenList.at(users.curr_user_).findId(inode_id) == -1){
+        std::cout << "File is not open!" << std::endl;
+        return false;
+    }
 
     int file_id = userOpenList[users.curr_user_].getFileId(inode_id);
     // 删除用户打开文件表中的项
@@ -222,9 +245,9 @@ bool FileSystem::closeFile(std::string filename){
     }
     // 更新inode
     superBlock.iNodeList_.inode_[inode_id].deleteLink();
-    if (superBlock.iNodeList_.inode_[inode_id].getLink() == 0){
-        superBlock.iNodeList_.deleteINode(inode_id);
-    }
+    // if (superBlock.iNodeList_.inode_[inode_id].getLink() == 0){
+    //     superBlock.iNodeList_.deleteINode(inode_id);
+    // }
     return true;
 }
 

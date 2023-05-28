@@ -199,7 +199,7 @@ int UserOpenList::getFileId(int iNodeid) {
 }
 
 bool UserOpenList::addItem(int iNodeId, int fileId){
-    int id = findId(iNodeId);
+    int id = findFreeItemId();
     if (id == -1){
         return false;
     }

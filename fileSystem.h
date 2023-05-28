@@ -40,13 +40,13 @@ public:
 
     FileSystem();
 
-    void createFile(std::string filename);  // 创建文件
-    void deleteFile(std::string filename);  // 删除文件
-    void createDir(std::string dirname);    // 创建目录
-    void deleteDir(std::string dirname);    // 删除目录
+    void createFile(std::string filename, Directory* curr_dir);  // 创建文件
+    void deleteFile(std::string filename, Directory* curr_dir);  // 删除文件
+    void createDir(std::string dirname, Directory* curr_dir);    // 创建目录
+    void deleteDir(std::string dirname, Directory* curr_dir);    // 删除目录
     void cd(std::string dirname);    // 切换目录
-    bool openFile(std::string filename, int mode, int sign);    // 打开文件 mode: 0-读 1-写 sign: 0-覆盖 1-追加
-    bool closeFile(std::string filename);   // 关闭文件
+    bool openFile(std::string filename, int mode, int sign, Directory* curr_dir);    // 打开文件 mode: 0-读 1-写 sign: 0-覆盖 1-追加
+    bool closeFile(std::string filename, Directory* curr_dir);   // 关闭文件
     bool writeFile(std::string filename, std::string content);   // 写文件
     std::string readFile(std::string filename, int len);  // 读文件
     void ls();  // 显示当前目录下的文件
