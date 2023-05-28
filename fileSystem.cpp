@@ -126,6 +126,12 @@ void FileSystem::deleteDir(std::string dirname) {
 FileSystem::FileSystem() {
     // 初始化
     superGroup.init();
+    users.createUser("root", "123");
+    users.login("root", "123");
+    int inode_id = superBlock.iNodeList_.getFreeINode();
+    superBlock.iNodeList_.addINode(INode("root", 1, 0, 0, 0, "2023-5-28 15:47:12", "2023-5-28 15:47:12", ""), inode_id);
+    users.setInodeId(inode_id);
+    superBlock.iNodeList_.inode_[inode_id].getDir()->init(inode_id, inode_id);
 }
 
 void FileSystem::cd(std::string dirname) {
