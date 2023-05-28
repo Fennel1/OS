@@ -30,7 +30,7 @@ private:
     GroupLeader *curr_group_; // 当前组
     int free_groupNum_ = TOTAL_GROUP_SIZE; // 空闲组数
 public:
-    int getFreeGroup(); // 获取一个空闲块
+    int getFreeBlock(); // 获取一个空闲块
     bool addBlockToGroup(int block_id); // 向当前组中添加一个块
     int getSize() const; // 获取剩余总块数
     void init();

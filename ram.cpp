@@ -55,6 +55,15 @@ int FileOpenItem::getMode() {
     return mode;
 }
 
+int FileOpenItem::getSign() {
+    return sign;
+}
+
+int FileOpenItem::setSign(int sign) {
+    this->sign = sign;
+    return sign;
+}
+
 void FileOpenList::clear() {
     for (int i = 0; i < capacity_; ++i) {
         fileOpenList_[i].clear();
@@ -76,6 +85,14 @@ void FileOpenList::setOffSet(int id, unsigned offSet) {
 
 int FileOpenList::getMode(int id) {
     return fileOpenList_[id].getMode();
+}
+
+int FileOpenList::getSign(int id) {
+    return fileOpenList_[id].getSign();
+}
+
+int FileOpenList::setSign(int id, int sign) {
+    return fileOpenList_[id].setSign(sign);
 }
 
 bool FileOpenList::deleteItem(int id) {

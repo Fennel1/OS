@@ -46,7 +46,7 @@ bool GroupLeader::setNextLeader(GroupLeader *next_leader) {
     return true;
 }
 
-int SuperGroup::getFreeGroup() {
+int SuperGroup::getFreeBlock() {
     if (free_groupNum_ == 0) {
         return -1;
     }

@@ -57,15 +57,16 @@ int INode::getBlockNum() {
     return block_num_;
 }
 
-bool INode::freeBlock() {
+int INode::freeBlock() {
     if (block_num_ == 0) {
-        return false;
+        return -1;
     }
-    if (indexTable_.dropIndex()) {
-        block_num_--;
-        return true;
+    int block_id = indexTable_.dropIndex();
+    if (block_id == -1) {
+        return -1;
     }
-    return false;
+    block_num_--;
+    return block_id;
 }
 
 bool INode::addBlock(int block_id) {

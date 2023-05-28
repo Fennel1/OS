@@ -41,15 +41,14 @@ int NormalIndex::getCapacity() const {
     return capacity_;
 }
 
-bool NormalIndex::dropIndex(int n) {
-    if (n <= 0 || n > size_) {
-        return false;
+int NormalIndex::dropIndex() {
+    if (size_ == 0) {
+        return -1;
     }
-    for (int i=0; i<n; i++) {
-        indexes_.pop_back();
-    }
-    size_ -= n;
-    return true;
+    int block_id = indexes_[size_-1];
+    indexes_.pop_back();
+    size_--;
+    return block_id;
 }
 
 NormalIndex& NormalIndex::getNextIndex(int n) {
@@ -188,32 +187,41 @@ int MixIndex::getSize() const {
     return size_;
 }
 
-bool MixIndex::dropDirectIndex() {
+int MixIndex::dropDirectIndex() {
     indexes_.pop_back();
     size_--;
     return true;
 }
 
-bool MixIndex::dropOneIndirectIndex() {
-    oneIndirectIndex.dropIndex(1);
+int MixIndex::dropOneIndirectIndex() {
+    int block_id = oneIndirectIndex.dropIndex();
+    if (block_id == -1) {
+        return -1;
+    }
     size_--;
-    return true;
+    return block_id;
 }
 
-bool MixIndex::dropTwoIndirectIndex() {
+int MixIndex::dropTwoIndirectIndex() {
     NormalIndex &one = twoIndirectIndex.getNextIndex(twoIndirectIndex.getSize() - 1);
-    one.dropIndex(1);
+    int block_id = one.dropIndex();
+    if (block_id == -1) {
+        return -1;
+    }
     if (one.getSize() == 0) {
         twoIndirectIndex.dropNextIndex(1);
     }
     size_--;
-    return true;
+    return block_id;
 }
 
-bool MixIndex::dropThreeIndirectIndex() {
+int MixIndex::dropThreeIndirectIndex() {
     NormalIndex &two = threeIndirectIndex.getNextIndex(threeIndirectIndex.getSize() - 1);
     NormalIndex &one = two.getNextIndex(two.getSize() - 1);
-    one.dropIndex(1);
+    int block_id = one.dropIndex();
+    if (block_id == -1) {
+        return -1;
+    }
     if (one.getSize() == 0) {
         two.dropNextIndex(1);
     }
@@ -221,12 +229,12 @@ bool MixIndex::dropThreeIndirectIndex() {
         threeIndirectIndex.dropNextIndex(1);
     }
     size_--;
-    return true;
+    return block_id;
 }
 
-bool MixIndex::dropIndex() {
+int MixIndex::dropIndex() {
     if (size_ == 0) {
-        return false;
+        return -1;
     }
 
     if (size_ <= BASIC_IDX) {
@@ -238,7 +246,7 @@ bool MixIndex::dropIndex() {
     } else if (size_ <= BASIC_IDX + IDXT_SIZE + ONE_IDXT_SIZE + TWO_IDXT_SIZE) {
         return dropThreeIndirectIndex();
     }
-    return false;
+    return -1;
 }
 
 void MixIndex::clear() {

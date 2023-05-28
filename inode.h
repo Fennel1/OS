@@ -32,7 +32,7 @@ public:
     int getSize();  // 获取文件大小
     int getBlockNum();  // 获取文件所占磁盘块数
     int differ();   // 文件变化情况
-    bool freeBlock();    // 释放文件占用的磁盘块
+    int freeBlock();    // 释放文件占用的磁盘块
     bool addBlock(int id);   // 添加磁盘块
     std::string getUserName();  // 获取用户名
     void clear();   // 清空i结点

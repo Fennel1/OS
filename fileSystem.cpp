@@ -252,18 +252,67 @@ bool FileSystem::writeFile(std::string filename, std::string content){
     }
 
     // 写入
-    int offset = fileOpenList.getOffSet(file_id);
-    fileOpenList.setOffSet(file_id, offset + content.size());
-    std::string tmp1 = superBlock.iNodeList_.inode_[inode_id].content_.substr(0, offset);
-    std::string tmp2 = superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, superBlock.iNodeList_.inode_[inode_id].content_.size() - offset);
-    superBlock.iNodeList_.inode_[inode_id].content_ = tmp1 + content + tmp2;
+    if (fileOpenList.getSign(file_id) == 0){    // 覆盖写入
+        superBlock.iNodeList_.inode_[inode_id].content_ = content;
+        fileOpenList.setSign(file_id, 1);
+        fileOpenList.setOffSet(file_id, content.size());
+    }
+    else{   // 追加写入
+        int offset = fileOpenList.getOffSet(file_id);
+        fileOpenList.setOffSet(file_id, offset + content.size());
+        std::string tmp1 = superBlock.iNodeList_.inode_[inode_id].content_.substr(0, offset);
+        std::string tmp2 = superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, superBlock.iNodeList_.inode_[inode_id].content_.size() - offset);
+        superBlock.iNodeList_.inode_[inode_id].content_ = tmp1 + content + tmp2;
+    }
 
     // 分配磁盘块
     int differ = superBlock.iNodeList_.inode_[inode_id].differ();
     superBlock.iNodeList_.inode_[inode_id].updateFileSize();
-    
+    while(differ > 0){
+        int block_id = superGroup.getFreeBlock();
+        superBlock.iNodeList_.inode_[inode_id].addBlock(block_id);
+        differ--;
+    }
+    while (differ < 0) {
+        int block_id = superBlock.iNodeList_.inode_[inode_id].freeBlock();
+        superGroup.addBlockToGroup(block_id);
+        differ++;
+    }
+    return true;
 }
 
 std::string FileSystem::readFile(std::string filename, int len){
+    Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
+    int inode_id = curr_dir->getItemId(filename);
+    if (inode_id == -1){
+        std::cout << "No such file!" << filename << std::endl;
+        return "";
+    }
+    // 判断是否有权限
+    if (!superBlock.iNodeList_.inode_[inode_id].inodeIsAuthor(users.curr_user_)){
+        std::cout << "You are not the author!" << std::endl;
+        return "";
+    }
+    // 判断是否为文件
+    if (superBlock.iNodeList_.inode_[inode_id].getType() == 0){
+        std::cout << "It's a directory!" << std::endl;
+        return "";
+    }
+    // 判断是否打开
+    int file_id = userOpenList[users.curr_user_].getFileId(inode_id);
+    if (file_id == -1){
+        std::cout << "You have not opened this file!" << std::endl;
+        return "";
+    }
+    // 判断是否可以读取
+    if (fileOpenList.getMode(file_id) == 1){
+        std::cout << "The file is write only!" << std::endl;
+        return "";
+    }
 
+    // 读取
+    int offset = fileOpenList.getOffSet(file_id);
+    len = std::min(len, (int)superBlock.iNodeList_.inode_[inode_id].content_.size() - offset);
+    fileOpenList.setOffSet(file_id, offset + len);
+    return superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, len);
 }

@@ -22,7 +22,7 @@ public:
     bool addIndex(int block_id);  // 添加磁盘块号为id的新索引
     int getSize() const;    // 获取索引表大小
     int getCapacity() const;    // 获取索引表容量
-    bool dropIndex(int n);  //  删除n个磁盘块
+    int dropIndex();  //  删除n个磁盘块
 
     NormalIndex& getNextIndex(int n);    // 获取第n个下一级索引表
     bool addNextIndex();   // 添加下一级索引表
@@ -45,10 +45,10 @@ private:
     bool addOneIndirectIndex(int block_id);   // 添加一级间接索引
     bool addTwoIndirectIndex(int block_id);   // 添加二级间接索引
     bool addThreeIndirectIndex(int block_id); // 添加三级间接索引
-    bool dropDirectIndex();  // 删除直接索引
-    bool dropOneIndirectIndex(); // 删除一级间接索引
-    bool dropTwoIndirectIndex(); // 删除二级间接索引
-    bool dropThreeIndirectIndex();   // 删除三级间接索引
+    int dropDirectIndex();  // 删除直接索引
+    int dropOneIndirectIndex(); // 删除一级间接索引
+    int dropTwoIndirectIndex(); // 删除二级间接索引
+    int dropThreeIndirectIndex();   // 删除三级间接索引
 
 public:
     MixIndex();
@@ -56,7 +56,7 @@ public:
     MixIndex& operator=(const MixIndex& thx);
 
     bool addIndex(int id);  // 添加新索引
-    bool dropIndex();        // 删除最后一个索引
+    int dropIndex();        // 删除一个索引
     int getSize() const;    // 获取索引表大小
     void clear();           // 清空索引表
     std::vector<int> getIndexes();  // 获取索引表

@@ -26,7 +26,9 @@ public:
     int getLinkN(); // 获取链接数
     void addLink(); // 增加链接数
     bool deleteLink();  // 删除链接数
-    int getMode();  // 获取创建文件的参数
+    int getMode();  // 获取模式
+    int getSign();  // 获取标志
+    int setSign(int sign);  // 设置标志
 };
 
 class FileOpenList {
@@ -50,6 +52,8 @@ public:
     int getItemInodeId(int id); // 获取inode号
     int getFreeItem();  // 获取空闲文件打开表项
     int getMode(int id);    // 获取模式
+    int getSign(int id);    // 获取标志
+    int setSign(int id, int sign);  // 设置标志
 };
 
 class UserOpenItem {
