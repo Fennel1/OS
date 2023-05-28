@@ -322,3 +322,12 @@ std::string FileSystem::readFile(std::string filename, int len){
     fileOpenList.setOffSet(file_id, offset + len);
     return superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, len);
 }
+
+void FileSystem::ls() {
+    Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
+    curr_dir->show();
+}
+
+void FileSystem::ls(std::string path) {
+
+}

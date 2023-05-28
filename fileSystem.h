@@ -49,6 +49,8 @@ public:
     bool closeFile(std::string filename);   // 关闭文件
     bool writeFile(std::string filename, std::string content);   // 写文件
     std::string readFile(std::string filename, int len);  // 读文件
+    void ls();  // 显示当前目录下的文件
+    void ls(std::string path);   // 显示指定目录下的文件
 };
 
 

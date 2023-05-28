@@ -1,6 +1,6 @@
 #include "user.h"
 
-User::User(std::string username, std::string password, int inode_id = -1) {
+User::User(std::string username, std::string password, int inode_id) {
     username_ = username;
     password_ = password;
     inode_id_ = inode_id;

@@ -1,4 +1,5 @@
 #include <map>
+#include <iostream>
 
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
@@ -21,6 +22,7 @@ public:
     void init(int id, int parent_id); // 初始化目录项
     void clear();   // 清空目录项
     std::string getFileName(int id); // 获取目录项文件名
+    void show(); // 显示目录项
 };
 
 #endif //DIRECTORY_H

@@ -67,3 +67,9 @@ std::string Directory::getFileName(int id) {
     }
     return "";
 }
+
+void Directory::show() {
+    for (auto it = directory.begin(); it != directory.end(); it++) {
+        std::cout << it->first << " " << it->second << std::endl;
+    }
+}
