@@ -6,7 +6,7 @@
 
 class User{
 private:
-    int inode_id_ = -1; // inode号
+    int inode_id_ = 0; // inode号
     std::string username_ = "";
     std::string password_ = "";
     bool state_ = false; // 0: logout, 1: login

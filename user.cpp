@@ -41,7 +41,7 @@ void User::logOut() {
 void User::clear() {
     username_ = "";
     password_ = "";
-    inode_id_ = -1;
+    inode_id_ = 0;
     state_ = false;
 }
 
@@ -60,7 +60,7 @@ bool Users::isExist(std::string username) {
 
 void Users::createUser(std::string username, std::string password) {
     if (!isExist(username)){
-        userList_.push_back(User(username, password));
+        userList_.push_back(User(username, password, 0));
     }
 }
 
@@ -105,12 +105,15 @@ bool Users::switchUser(std::string username) {
 }
 
 void Users::logOut() {
+    if (curr_user_ == "root"){
+        return;
+    }
     int i = findUser(curr_user_);
     if (i == -1){
         return;
     }
     userList_[i].logOut();
-    curr_user_ = "";
+    curr_user_ = "root";
 }
 
 int Users::getInodeId() {

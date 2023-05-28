@@ -5,6 +5,7 @@ void Console::run() {
     std::vector<std::string> args;
     while (true){
         // 获取当前路径
+        // std::cout << fileSystem_.users.getInodeId() << std::endl;
         std::string path;
         Directory *curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();
         int id = curr_dir->getItemId(".");
@@ -221,14 +222,55 @@ void Console::run() {
             // TODO 支持递归删除目录 
         }
         else if (args[0] == "login"){
+            if (args.size() != 3){
+                std::cout << "Usage: login <username> <password>" << std::endl;
+                continue;
+            }
+            if (fileSystem_.users.login(args[1], args[2]) == false){
+                std::cout << "Error: username or password is wrong." << std::endl;
+                continue;
+            }
         }
         else if (args[0] == "logout"){
+            if (args.size() != 1){
+                std::cout << "Usage: logout" << std::endl;
+                continue;
+            }
+            fileSystem_.users.logOut();
+        }
+        else if (args[0] == "adduser"){
+            if (args.size() != 3){
+                std::cout << "Usage: adduser <username> <password>" << std::endl;
+                continue;
+            }
+            if (fileSystem_.users.isExist(args[1])){
+                std::cout << "Error: " << args[1] << " is exist." << std::endl;
+                continue;
+            }
+            fileSystem_.users.createUser(args[1], args[2]);
         }
         else if (args[0] == "switch"){
+            if (args.size() != 2){
+                std::cout << "Usage: switch <username>" << std::endl;
+                continue;
+            }
+            if (fileSystem_.users.switchUser(args[1]) == false){
+                std::cout << "Error: " << args[1] << " is not exist or not login." << std::endl;
+                continue;
+            }
         }
         else if (args[0] == "format"){
         }
         else if (args[0] == "rename"){
+            if (args.size() != 3){
+                std::cout << "Usage: rename <oldname> <newname>" << std::endl;
+                continue;
+            }
+            curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();
+            if (!curr_dir->setFileName(args[1], args[2])){
+                std::cout << "Error: " << args[1] << " is not exist or " << args[2] << " is exist." << std::endl;
+                continue;
+            }
         }
         else {
             std::cout << "Error: " << args[0] << " is not a command." << std::endl;
