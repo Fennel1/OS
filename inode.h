@@ -1,5 +1,6 @@
 #include <string>
 #include <math.h>
+#include <fstream>
 #include "directory.h"
 #include "memory.h"
 #include "settings.h"
@@ -10,6 +11,8 @@
 
 class INode {
 private:
+
+public:
     std::string username_ = ""; // 用户名
     int type_ = -1; // 文件类型 0-文件 1-目录
     int nlink_ = 0; // 文件链接数
@@ -17,8 +20,7 @@ private:
     int block_num_ = 0; // 文件所占磁盘块数
     std::string set_time_ = ""; // 文件创建时间
     std::string mod_time_ = ""; // 文件修改时间
-
-public:
+    
     MixIndex indexTable_;    // 索引表
     Directory dir_; // 目录
     std::string content_; // 文件内容
@@ -43,6 +45,8 @@ public:
     bool inodeIsAuthor(std::string username); // 判断i结点是否属于某用户
     void setModTime(std::string mod_time); // 设置修改时间
     Directory* getDir();    // 获取目录
+    std::string getSetTime(); // 获取创建时间
+    std::string getModTime(); // 获取修改时间
 };
 
 class INodeList {

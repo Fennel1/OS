@@ -6,11 +6,13 @@
 
 class User{
 private:
+    
+public:
     int inode_id_ = 0; // inode号
     std::string username_ = "";
     std::string password_ = "";
     bool state_ = false; // 0: logout, 1: login
-public:
+    
     User() = default;
     User(std::string username, std::string password, int inode_id = -1);
 

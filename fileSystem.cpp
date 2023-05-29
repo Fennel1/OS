@@ -24,7 +24,7 @@ void SuperBlock::createFile(std::string filename, Directory* curr_dir, std::stri
     // 获取当前时间
     auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    ss << std::put_time(std::localtime(&t), "%Y-%m-%d-%H:%M:%S");
     std::string curr_time = ss.str();
 
     // 创建inode, 并添加到inode表中
@@ -147,7 +147,7 @@ FileSystem::FileSystem() {
     users.createUser("root", "123");
     users.login("root", "123");
     int inode_id = superBlock.iNodeList_.getFreeINode();
-    superBlock.iNodeList_.addINode(INode("root", 1, 0, 0, 0, "2023-5-28 15:47:12", "2023-5-28 15:47:12", ""), inode_id);
+    superBlock.iNodeList_.addINode(INode("root", 1, 0, 0, 0, "2023-5-28-15:47:12", "2023-5-28-15:47:12", ""), inode_id);
     users.setInodeId(inode_id);
     superBlock.iNodeList_.inode_[inode_id].getDir()->init(inode_id, inode_id);
 }
@@ -353,4 +353,104 @@ void FileSystem::ls() {
 
 void FileSystem::ls(std::string path) {
 
+}
+
+void FileSystem::rm(std::string path, Directory* curr_dir){
+
+}
+
+void FileSystem::format() {
+    for (int i=0; i<INODE_NUM; i++){
+        superBlock.iNodeList_.iNodeBitMap_[i] = false;
+        superBlock.iNodeList_.inode_[i].clear();
+        superBlock.iNodeList_.used_size_ = 0;
+    }
+    superGroup.init();
+    users.userList_.clear();
+    users.curr_user_ = "root";
+    users.createUser("root", "123");
+    userOpenList.clear();
+    fileOpenList.clear();
+}
+
+void FileSystem::save() {
+    std::ofstream INodeListout("..\\img\\iNodeList.txt");
+    INodeListout << superBlock.iNodeList_.used_size_ << std::endl;
+    for (int i=0; i<INODE_NUM; i++){
+        if (superBlock.iNodeList_.iNodeBitMap_[i]){
+            INodeListout << i << " " << superBlock.iNodeList_.inode_[i].getUserName() << " " 
+            << superBlock.iNodeList_.inode_[i].getType() << " " << superBlock.iNodeList_.inode_[i].getLink() << " "
+            << superBlock.iNodeList_.inode_[i].getSize() << " " << superBlock.iNodeList_.inode_[i].getBlockNum() << " "
+            << superBlock.iNodeList_.inode_[i].getSetTime() << " " << superBlock.iNodeList_.inode_[i].getModTime() << std::endl;
+            Directory *curr_dir = superBlock.iNodeList_.inode_[i].getDir();
+            INodeListout << curr_dir->directory.size() << " ";
+            for (auto iter=curr_dir->directory.begin(); iter!=curr_dir->directory.end(); iter++){
+                INodeListout << iter->first << " " << iter->second << " ";
+            }
+            INodeListout << std::endl;
+            std::string file = "..\\img\\content\\" + std::to_string(i) + ".txt";
+            std::ofstream contentout(file);
+            contentout << superBlock.iNodeList_.inode_[i].content_;
+            contentout.close();
+        }
+    }
+    INodeListout.close();
+
+    std::ofstream usersout("..\\img\\users.txt");
+    usersout << users.userList_.size()-1 << std::endl;
+    for (auto iter=users.userList_.begin(); iter!=users.userList_.end(); iter++){
+        if (iter->getUserName() == "root"){
+            continue;
+        }
+        usersout << iter->getUserName() << " " << iter->getPassword() << " " << iter->getInodeId() << std::endl;
+    }
+    usersout.close();
+    std::cout << "Save successfully!" << std::endl;
+}
+
+void FileSystem::load(){
+    format();
+    std::ifstream INodeListin("..\\img\\iNodeList.txt");
+    int used_size;
+    INodeListin >> used_size;
+    superBlock.iNodeList_.used_size_ = used_size;
+    for (int i=0; i<used_size; i++){
+        int inode_id, type, link, size, block_num;
+        std::string user_name, set_time, mod_time;
+        INodeListin >> inode_id >> user_name >> type >> link >> size >> block_num >> set_time >> mod_time;
+        superBlock.iNodeList_.iNodeBitMap_[inode_id] = true;
+        superBlock.iNodeList_.inode_[inode_id].username_ = user_name;
+        superBlock.iNodeList_.inode_[inode_id].type_ = type;
+        superBlock.iNodeList_.inode_[inode_id].nlink_= link;
+        superBlock.iNodeList_.inode_[inode_id].file_size_ = size;
+        superBlock.iNodeList_.inode_[inode_id].block_num_ = block_num;
+        superBlock.iNodeList_.inode_[inode_id].set_time_ = set_time;
+        superBlock.iNodeList_.inode_[inode_id].mod_time_ = mod_time;
+        Directory *curr_dir = superBlock.iNodeList_.inode_[inode_id].getDir();
+        std::string filename;
+        int num;
+        INodeListin >> num;
+        for (int j=0; j<num; j++){
+            INodeListin >> filename >> inode_id;
+            curr_dir->directory[filename] = inode_id;
+        }
+        std::string file = "..\\img\\content\\" + std::to_string(inode_id) + ".txt";
+        std::ifstream contentin(file);
+        std::string content;
+        contentin >> content;
+        superBlock.iNodeList_.inode_[inode_id].content_ = content;
+        contentin.close();
+    }
+    INodeListin.close();
+
+    std::ifstream usersin("..\\img\\users.txt");
+    std::string user_name, password;
+    int inode_id, user_num;
+    usersin >> user_num;
+    for (int i=0; i<user_num; i++){
+        usersin >> user_name >> password >> inode_id;
+        users.createUser(user_name, password);
+        users.userList_[i].inode_id_ = inode_id;
+    }
+    usersin.close();
 }

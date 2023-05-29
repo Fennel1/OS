@@ -51,6 +51,10 @@ public:
     std::string readFile(std::string filename, int len);  // 读文件
     void ls();  // 显示当前目录下的文件
     void ls(std::string path);   // 显示指定目录下的文件
+    void rm(std::string path, Directory* curr_dir);  // 递归删除目录
+    void format();  // 格式化文件系统
+    void save();    // 保存文件系统
+    void load();    // 加载文件系统
 };
 
 

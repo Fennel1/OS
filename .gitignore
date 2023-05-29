@@ -1,2 +1,5 @@
 build/
 .vscode/
+img/content/*
+img/iNodeList.txt
+img/users.txt

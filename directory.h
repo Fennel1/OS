@@ -6,9 +6,10 @@
 
 class Directory {
 private:
-    std::map<std::string, int> directory; // 目录表
 
 public:
+    std::map<std::string, int> directory; // 目录表
+
     Directory() = default;
     Directory(const Directory& thx);
     Directory& operator=(const Directory& thx);

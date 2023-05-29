@@ -1,7 +1,5 @@
 #include "INode.h"
 
-bool iNodeBitMap[INODE_NUM];
-
 INode::INode(const INode& thx) {
     username_ = thx.username_;
     type_ = thx.type_;
@@ -123,7 +121,7 @@ int INode::getType() {
 }
 
 bool INode::inodeIsAuthor(std::string username) {
-    if (username_ == username) {
+    if (username_ == username || username == "root" || username_ == "root") {
         return true;
     }
     return false;
@@ -137,10 +135,18 @@ Directory *INode::getDir() {
     return &dir_;
 }
 
+std::string INode::getSetTime() {
+    return set_time_;
+}
+
+std::string INode::getModTime() {
+    return mod_time_;
+}
+
 INodeList::INodeList() {
     used_size_ = 0;
     for (int i = 0; i < INODE_NUM; i++) {
-        iNodeBitMap[i] = false;
+        iNodeBitMap_[i] = false;
     }
 }
 
@@ -149,7 +155,7 @@ int INodeList::getFreeINode() {
         return -1;
     }
     for (int i = 0; i < INODE_NUM; i++) {
-        if (iNodeBitMap[i] == false) {
+        if (iNodeBitMap_[i] == false) {
             return i;
         }
     }
@@ -157,27 +163,27 @@ int INodeList::getFreeINode() {
 }
 
 bool INodeList::addINode(INode inode, int pos) {
-    if (iNodeBitMap[pos] == true) {
+    if (iNodeBitMap_[pos] == true) {
         return false;
     }
-    iNodeBitMap[pos] = true;
+    iNodeBitMap_[pos] = true;
     inode_[pos] = inode;
     used_size_++;
     return true;
 }
 
 bool INodeList::deleteINode(int pos) {
-    if (iNodeBitMap[pos] == false) {
+    if (iNodeBitMap_[pos] == false) {
         return false;
     }
-    iNodeBitMap[pos] = false;
+    iNodeBitMap_[pos] = false;
     inode_[pos].clear();
     used_size_--;
     return true;
 }
 
 bool INodeList::updateINode(int pos, INode inode) {
-    if (iNodeBitMap[pos] == false) {
+    if (iNodeBitMap_[pos] == false) {
         return false;
     }
     inode_[pos] = inode;

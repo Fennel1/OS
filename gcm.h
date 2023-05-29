@@ -28,7 +28,7 @@ public:
 class SuperGroup {  //成组链接法管理空闲磁盘块
 private:
     GroupLeader *curr_group_; // 当前组
-    int free_groupNum_ = TOTAL_GROUP_SIZE; // 空闲组数
+    int free_groupNum_ = TOTAL_GROUP_SIZE; // 空闲磁盘数
 public:
     int getFreeBlock(); // 获取一个空闲块
     bool addBlockToGroup(int block_id); // 向当前组中添加一个块

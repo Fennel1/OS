@@ -220,6 +220,7 @@ void Console::run() {
                 continue;
             }
             // TODO 支持递归删除目录 
+
         }
         else if (args[0] == "login"){
             if (args.size() != 3){
@@ -260,6 +261,25 @@ void Console::run() {
             }
         }
         else if (args[0] == "format"){
+            if (args.size() != 1){
+                std::cout << "Usage: format" << std::endl;
+                continue;
+            }
+            fileSystem_.format();
+        }
+        else if (args[0] == "save"){
+            if (args.size() != 1){
+                std::cout << "Usage: save" << std::endl;
+                continue;
+            }
+            fileSystem_.save();
+        }
+        else if (args[0] == "load"){
+            if (args.size() != 1){
+                std::cout << "Usage: load" << std::endl;
+                continue;
+            }
+            fileSystem_.load();
         }
         else if (args[0] == "rename"){
             if (args.size() != 3){

@@ -85,4 +85,5 @@ void SuperGroup::init() {
             group_leader->addBlockToGroup(i*GROUP_SIZE+j);
         }
     }
+    free_groupNum_ = TOTAL_GROUP_SIZE;
 }
