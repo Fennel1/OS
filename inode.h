@@ -23,7 +23,7 @@ public:
     
     MixIndex indexTable_;    // 索引表
     Directory dir_; // 目录
-    std::string content_; // 文件内容
+    std::string content_ = ""; // 文件内容
 
     INode() = default;
     INode(const INode& thx);
@@ -47,6 +47,7 @@ public:
     Directory* getDir();    // 获取目录
     std::string getSetTime(); // 获取创建时间
     std::string getModTime(); // 获取修改时间
+    std::string getTypeInfo();  // 获取文件类型
 };
 
 class INodeList {

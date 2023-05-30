@@ -1,6 +1,8 @@
 #include "fileSystem.h"
 #include "man.h"
 #include "window.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef FILESYSTEM_CONSOLE_H
 #define FILESYSTEM_CONSOLE_H

@@ -1,5 +1,5 @@
 #include "console.h"
-
+#include<conio.h>
 void Console::run() {
     std::string cmd;
     std::vector<std::string> args;
@@ -64,6 +64,10 @@ void Console::run() {
                         fileSystem_.createDir(path_list[i], curr_dir);
                         id = curr_dir->getItemId(path_list[i]);
                     }
+                    if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
+                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        break;
+                    }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
                 // std::cout << "create file: " << path_list[path_list.size()-1] << std::endl;
@@ -75,6 +79,10 @@ void Console::run() {
                     if (id == -1){
                         fileSystem_.createDir(path_list[i], curr_dir);
                         id = curr_dir->getItemId(path_list[i]);
+                    }
+                    if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
+                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
@@ -94,7 +102,6 @@ void Console::run() {
             else{
                 curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();   
             }
-            // TODO 目前只能删除当前目录下的文件，支持删除相对路径，绝对路径下的文件 邓
             // 删除文件/目录
             if (is_file){       // 删除文件
                 for (int i=0; i<path_list.size()-1; i++){
@@ -103,17 +110,25 @@ void Console::run() {
                         std::cout << "Error: " << args[1] << " is not exist." << std::endl;
                         continue;
                     }
+                    if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
+                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        break;
+                    }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
                 // std::cout << "delete file: " << path_list[path_list.size()-1] << std::endl;
                 fileSystem_.deleteFile(path_list[path_list.size()-1], curr_dir);
             }
             else{        // 删除目录
-                for (int i=0; i<path_list.size(); i++){
+                for (int i=0; i<path_list.size()-1; i++){
                     int id = curr_dir->getItemId(path_list[i]);
                     if (id == -1){
                         std::cout << "Error: " << args[1] << " is not exist." << std::endl;
                         continue;
+                    }
+                    if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
+                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
@@ -184,22 +199,80 @@ void Console::run() {
                 std::cout << "Usage: read <path>" << std::endl;
                 continue;
             }
-            //TODO 支持读出信息到window 图
+            bool is_root, is_file;
+            std::vector<std::string>path_list=splitPath(args[1],is_root,is_file);
+            // 计算路径
+            if (is_root){
+                curr_dir = fileSystem_.superBlock.iNodeList_.inode_[0].getDir();
+            }
+            else{
+                curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();   
+            }
+             //输出文件内容到终端
+            std::string f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
+            system("cls");//清空终端
+            std::cout<<f;
+            getchar();
         }
         else if (args[0] == "write"){
             if (args.size() != 2){
                 std::cout << "Usage: write <path>" << std::endl;
                 continue;
             }
-            //TODO 支持通过window写入信息 图
+            bool is_root, is_file;
+            std::vector<std::string>path_list=splitPath(args[1],is_root,is_file);
+            // 计算路径
+            if (is_root){
+                curr_dir = fileSystem_.superBlock.iNodeList_.inode_[0].getDir();
+            }
+            else{
+                curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();   
+            }
+            std::string f="";
+            char a;
+            // system("cls");
+            f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
+            while(1)
+            {
+                system("cls");
+                // std::cout << 1 << std::endl;
+                std::cout<<f;
+                a=getche();
+                if(a=='\b')
+                {
+                    f.pop_back();
+                }
+                else if(a==27)
+                {
+                    break;
+                }
+                else if(a=='\r')
+                {
+                    f.push_back('\n');
+                }
+                else
+                {
+                    f.push_back(a);
+                }
+            }
+            fileSystem_.writeFile(path_list[path_list.size()-1], f);
+            system("cls");
+            std::cout<<path_list[path_list.size()-1]<<" has been written."<<std::endl;
         }
         else if (args[0] == "cd"){
             if (args.size() != 2){
                 std::cout << "Usage: cd <path>" << std::endl;
                 continue;
             }
-            // TODO cd相对路径、绝对路径，当前只能cd一层 邓
-            fileSystem_.cd(args[1]);
+            bool is_root, is_file;
+            std::vector<std::string> path_list = splitPath(args[1], is_root, is_file);
+            //计算路径
+            if(is_root){
+                fileSystem_.users.setInodeId(0);
+            }
+            for (int i=0; i<path_list.size(); i++){
+                fileSystem_.cd(path_list[i]);
+            }
         }
         else if (args[0] == "ls"){
             // TODO 支持ls <path>格式，包括相对路径、绝对路径，输出全部信息 邓
@@ -291,6 +364,20 @@ void Console::run() {
                 std::cout << "Error: " << args[1] << " is not exist or " << args[2] << " is exist." << std::endl;
                 continue;
             }
+        }
+        else if (args[0] == "help"){
+            if (args.size() != 1){
+                std::cout << "Usage: help" << std::endl;
+                continue;
+            }
+            help_.help();
+        }
+        else if (args[0] == "man"){
+            if (args.size() != 2){
+                std::cout << "Usage: man <command>" << std::endl;
+                continue;
+            }
+            help_.man(args[1]);
         }
         else {
             std::cout << "Error: " << args[0] << " is not a command." << std::endl;

@@ -40,10 +40,10 @@ INode& INode::operator=(const INode& thx) {
 
 void INode::updateFileSize() {
     if (type_ == 0) {
-        file_size_ = sizeof(content_);
+        file_size_ = content_.size();
     }
     else{
-        file_size_ = sizeof(dir_);
+        file_size_ = dir_.getSize();
     }
 }
 
@@ -79,10 +79,10 @@ int INode::differ()
 {
     int diff = 0;
     if(type_ == 1){
-        diff = sizeof(dir_) - file_size_;
+        diff = dir_.getSize() - file_size_;
     }
     else{
-        diff = sizeof(content_) - file_size_;
+        diff = content_.size() - file_size_;
     }
     return (int)std::ceil((double)diff / (double)BLOCK_SIZE);
 }
@@ -141,6 +141,18 @@ std::string INode::getSetTime() {
 
 std::string INode::getModTime() {
     return mod_time_;
+}
+
+std::string INode::getTypeInfo(){
+    if(type_ == 0){
+        return "file";
+    }
+    else if(type_ == 1){
+        return "dir";
+    }
+    else{
+        return "error";
+    }
 }
 
 INodeList::INodeList() {

@@ -1,0 +1,103 @@
+2023-05-30 21:22:11: openFile: Open file successfully! 1
+2023-05-30 21:49:12: openFile: Open file successfully! a
+2023-05-30 21:52:53: openFile: Open file successfully! a
+2023-05-30 21:53:06: a
+2023-05-30 21:53:28: aasafasfasfzxczxcrqw
+
+2023-05-30 21:54:11: openFile: Open file successfully! a
+2023-05-30 21:54:20: a
+2023-05-30 21:54:20: a
+2023-05-30 21:55:12: asdasfqwasssaaddqw
+
+2023-05-30 21:55:12: 
+2023-05-30 21:55:24: asdasfqwasssaaddqw
+
+2023-05-30 21:55:24: 
+2023-05-30 21:56:59: openFile: Open file successfully! a
+2023-05-30 21:57:02: a
+2023-05-30 21:57:02: a
+2023-05-30 21:57:10: aasasfasfas
+2023-05-30 21:57:10: 
+2023-05-30 21:57:47: openFile: Open file successfully! a
+2023-05-30 21:57:49: a
+2023-05-30 21:57:49: a
+2023-05-30 21:57:56: a12312assdsa
+
+2023-05-30 21:57:56: 
+2023-05-30 21:58:33: openFile: Open file successfully! a
+2023-05-30 21:58:36: readFile: a 1 bytes
+2023-05-30 21:58:36: a
+2023-05-30 21:58:36: a
+2023-05-30 21:58:43: readFile: a 10 bytes
+2023-05-30 21:58:43: aasdsafafas1
+
+2023-05-30 21:58:43: 
+2023-05-30 21:59:54: openFile: Open file successfully! a
+2023-05-30 21:59:57: readFile: a 1 bytes
+2023-05-30 21:59:57: a
+2023-05-30 21:59:57: readFile: offset 0
+2023-05-30 21:59:57: readFile: len 1
+2023-05-30 21:59:57: a
+2023-05-30 22:00:03: readFile: a 10 bytes
+2023-05-30 22:00:03: asafafasfqwe
+2023-05-30 22:00:03: readFile: offset 12
+2023-05-30 22:00:03: readFile: len 0
+2023-05-30 22:00:03: 
+2023-05-30 22:01:08: openFile: Open file successfully! a
+2023-05-30 22:02:45: readFile: a 1 bytes
+2023-05-30 22:02:45: a
+2023-05-30 22:02:45: readFile: offset 0
+2023-05-30 22:02:45: readFile: len 1
+2023-05-30 22:02:45: a
+2023-05-30 22:02:50: readFile: a 10 bytes
+2023-05-30 22:02:50: aasfafasfafas
+2023-05-30 22:02:50: readFile: offset 13
+2023-05-30 22:02:50: readFile: len 0
+2023-05-30 22:02:50: 
+2023-05-30 22:03:49: openFile: Open file successfully! a
+2023-05-30 22:04:04: readFile: a 1 bytes
+2023-05-30 22:04:04: a
+2023-05-30 22:04:04: readFile: offset 0
+2023-05-30 22:04:04: readFile: len 1
+2023-05-30 22:04:04: a
+2023-05-30 22:04:14: readFile: a 10 bytes
+2023-05-30 22:04:14: a123123asdsdasdas
+2023-05-30 22:04:14: readFile: offset 17
+2023-05-30 22:04:14: readFile: len 0
+2023-05-30 22:04:14: 
+2023-05-30 22:07:52: openFile: Open file successfully! a
+2023-05-30 22:09:59: openFile: Open file successfully! a
+2023-05-30 22:10:17: openFile: Open file successfully! b
+2023-05-30 22:12:15: openFile: Open file successfully! a
+2023-05-30 22:13:06: openFile: Open file successfully! a
+2023-05-30 22:16:08: openFile: Open file successfully! a
+2023-05-30 22:16:16: a
+2023-05-30 22:17:02: a
+2023-05-30 22:18:14: readFile: You have not opened this file! b
+2023-05-30 22:18:58: openFile: Open file successfully! b
+2023-05-30 22:19:18: b
+2023-05-30 22:24:43: openFile: Open file successfully! a
+2023-05-30 22:24:50: 
+2023-05-30 22:24:57: 
+2023-05-30 22:25:02: asdgyasgkasdjkasduisa
+2023-05-30 22:25:36: asdgyasgkasdjkasduisa
+2023-05-30 22:27:34: asdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasd
+2023-05-30 22:27:50: asdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgasjdgasjgdhasgdyuqwgdasdh
+asdhasbdjqwbjbdkjasbdjkhasjkdhasdkjsa
+2023-05-30 22:27:58: asdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgasjdgasjgdhasgdyuqwgdasdh
+asdhasbdjqwbjbdkjasbdjkhasjkdhasdkjsa
+2023-05-30 22:28:01: asdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgyasgkasdjkasduisaasdgyasgkasdjkasduisaasdsadafasdasdasdasdgasjdgasjgdhasgdyuqwgdasdh
+asdhasbdjqwbjbdkjasbdjkhasjkdhasdkjsa
+2023-05-30 22:30:18: openFile: Open file successfully! a
+2023-05-30 22:30:33: 
+2023-05-30 22:30:43: asdgashdjkhqwuihdkjasbdhquid
+asdhasbdbqiwudbkjsabdh	wq
+2023-05-30 22:30:50: asdgashdjkhqwuihdkjasbdhquid
+asdhasbdbqiwudbkjsabdh	wq
+2023-05-30 22:31:15: asdgashdjkhqwuihdkjasbdhquid
+asdhasbdbqiwudbkjsabdh	wqasdgashdjkhqwuihdkjasbdhquid
+asdhasbdbqiwudbkjsabdh	wqasdgaskbdkjasnjd
+asdhasbdqwjbdibasmbdj
+assdja
+int main(){
+}

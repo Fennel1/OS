@@ -55,6 +55,7 @@ public:
     void format();  // 格式化文件系统
     void save();    // 保存文件系统
     void load();    // 加载文件系统
+    std::string getCurrentTime(tm in);  //获取当前时间
 };
 
 
