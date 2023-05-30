@@ -38,6 +38,9 @@ public:
     FileOpenList fileOpenList;  // 文件打开表
     std::map<std::string, UserOpenList> userOpenList;   // 用户打开表
 
+    bool is_error;  // 是否出错
+    std::string error_msg;  // 错误信息
+
     FileSystem();
 
     void createFile(std::string filename, Directory* curr_dir);  // 创建文件

@@ -73,6 +73,8 @@ void SuperBlock::createFile(std::string filename, Directory* curr_dir, std::stri
     iNodeList_.addINode(INode(curr_user, 0, 0, 0, 0, curr_time, curr_time, ""), inode_id);
     // 添加到目录中
     curr_dir->addItem(filename, inode_id);
+    std::string err = "createFile: Create file successfully! " + filename;
+    writeLog(err);
 }
 
 void FileSystem::createFile(std::string filename, Directory* curr_dir) {
@@ -156,6 +158,8 @@ void SuperBlock::createDir(std::string dirname, Directory* curr_dir, std::string
     // 添加到目录中
     curr_dir->addItem(dirname, inode_id);
     iNodeList_.inode_[inode_id].getDir()->init(inode_id, pid);
+    std::string err = "createDir: Create directory successfully! " + dirname;
+    writeLog(err);
 }
 
 void FileSystem::createDir(std::string dirname, Directory* curr_dir) {
@@ -238,6 +242,8 @@ void FileSystem::cd(std::string dirname) {
         return;
     }
     users.setInodeId(inode_id);
+    std::string err = "cd: Change directory successfully! " + dirname;
+    writeLog(err);
 }
 
 bool FileSystem::openFile(std::string filename, int mode, int sign, Directory* curr_dir) {
@@ -338,6 +344,8 @@ bool FileSystem::closeFile(std::string filename, Directory* curr_dir){
     // if (superBlock.iNodeList_.inode_[inode_id].getLink() == 0){
     //     superBlock.iNodeList_.deleteINode(inode_id);
     // }
+    std::string err = "closeFile: Close file successfully! " + filename;
+    writeLog(err);
     return true;
 }
 
@@ -407,6 +415,8 @@ bool FileSystem::writeFile(std::string filename, std::string content){
         superGroup.addBlockToGroup(block_id);
         differ++;
     }
+    std::string err = "writeFile: Write file successfully! " + filename;
+    writeLog(err);
     return true;
 }
 
@@ -451,7 +461,12 @@ std::string FileSystem::readFile(std::string filename, int len){
 
     // 读取
     std::string res = superBlock.iNodeList_.inode_[inode_id].content_;
-    writeLog(res);
+    // writeLog(res);
+    if (res == ""){
+        res = " ";
+    }
+    std::string err = "readFile: Read file successfully! " + filename;
+    writeLog(err);
     return res;
 }
 
@@ -477,8 +492,9 @@ void FileSystem::ls() {
         std::cout   << std::left << std::setw(12) << superBlock.iNodeList_.inode_[iter->second].getBlockNum() ;
         std::cout   << std::left << std::setw(25) << superBlock.iNodeList_.inode_[iter->second].getModTime() ;
         std::cout   << std::left << std::setw(25) << superBlock.iNodeList_.inode_[iter->second].getSetTime() << std::endl;
-
     }
+    std::string err = "ls: List directory successfully!";
+    writeLog(err);
 }
 
 void FileSystem::ls(std::string path) {
@@ -501,6 +517,8 @@ void FileSystem::format() {
     users.createUser("root", "123");
     userOpenList.clear();
     fileOpenList.clear();
+    std::string err = "format: Format successfully!";
+    writeLog(err);
 }
 
 void FileSystem::save() {
@@ -536,6 +554,8 @@ void FileSystem::save() {
     }
     usersout.close();
     std::cout << "Save successfully!" << std::endl;
+    std::string err = "save: Save successfully!";
+    writeLog(err);
 }
 
 void FileSystem::load(){
@@ -583,4 +603,7 @@ void FileSystem::load(){
         users.userList_[i].inode_id_ = inode_id;
     }
     usersin.close();
+
+    std::string err = "load: Load successfully!";
+    writeLog(err);
 }

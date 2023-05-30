@@ -4,6 +4,7 @@ void Console::run() {
     std::string cmd;
     std::vector<std::string> args;
     while (true){
+        fileSystem_.is_error = false;
         // 获取当前路径
         // std::cout << fileSystem_.users.getInodeId() << std::endl;
         std::string path;
@@ -65,13 +66,15 @@ void Console::run() {
                         id = curr_dir->getItemId(path_list[i]);
                     }
                     if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
-                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is a file";
                         break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
-                // std::cout << "create file: " << path_list[path_list.size()-1] << std::endl;
-                fileSystem_.createFile(path_list[path_list.size()-1], curr_dir);
+                if (!fileSystem_.is_error){
+                    fileSystem_.createFile(path_list[path_list.size()-1], curr_dir);
+                }
             }
             else{        // 创建目录
                 for (int i=0; i<path_list.size(); i++){
@@ -81,7 +84,8 @@ void Console::run() {
                         id = curr_dir->getItemId(path_list[i]);
                     }
                     if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
-                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is a file";
                         break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
@@ -107,11 +111,13 @@ void Console::run() {
                 for (int i=0; i<path_list.size()-1; i++){
                     int id = curr_dir->getItemId(path_list[i]);
                     if (id == -1){
-                        std::cout << "Error: " << args[1] << " is not exist." << std::endl;
-                        continue;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is not exist.";
+                        break;
                     }
                     if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
-                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is a file";
                         break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
@@ -123,17 +129,20 @@ void Console::run() {
                 for (int i=0; i<path_list.size()-1; i++){
                     int id = curr_dir->getItemId(path_list[i]);
                     if (id == -1){
-                        std::cout << "Error: " << args[1] << " is not exist." << std::endl;
-                        continue;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is not exist.";
+                        break;
                     }
                     if (fileSystem_.superBlock.iNodeList_.inode_[id].getType() == 0){
-                        std::cout << "Error: " << path_list[i] << " is a file" << std::endl;
+                        fileSystem_.is_error = true;
+                        fileSystem_.error_msg = "Error: " + path_list[i] + " is a file";
                         break;
                     }
                     curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
                 }
-                // std::cout << "delete dir: " << path_list[path_list.size()-1] << std::endl;
-                fileSystem_.deleteDir(path_list[path_list.size()-1], curr_dir);
+                if (!fileSystem_.is_error){
+                    fileSystem_.deleteDir(path_list[path_list.size()-1], curr_dir);
+                }
             }
         }
         else if (args[0] == "open"){
@@ -144,7 +153,9 @@ void Console::run() {
             bool is_root, is_file;
             std::vector<std::string> path_list = splitPath(args[1], is_root, is_file);
             if (is_file == false){
-                std::cout << "Error: " << args[1] << " is not a file." << std::endl;
+                fileSystem_.is_error = true;
+                fileSystem_.error_msg = "Error: " + args[1] + " is a directory";
+                std::cout << fileSystem_.error_msg << std::endl;
                 continue;
             }
             // 计算路径
@@ -158,12 +169,15 @@ void Console::run() {
             for (int i=0; i<path_list.size()-1; i++){
                 int id = curr_dir->getItemId(path_list[i]);
                 if (id == -1){
-                    std::cout << "Error: " << args[1] << " is not exist." << std::endl;
-                    continue;
+                    fileSystem_.is_error = true;
+                    fileSystem_.error_msg = "Error: " + path_list[i] + " is not exist.";
+                    break;
                 }
                 curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
             }
-            fileSystem_.openFile(path_list[path_list.size()-1], std::stoi(args[2]), std::stoi(args[3]), curr_dir);
+            if (!fileSystem_.is_error){
+                fileSystem_.openFile(path_list[path_list.size()-1], std::stoi(args[2]), std::stoi(args[3]), curr_dir);
+            }
         }
         else if (args[0] == "close"){
             if (args.size() != 2){
@@ -173,7 +187,9 @@ void Console::run() {
             bool is_root, is_file;
             std::vector<std::string> path_list = splitPath(args[1], is_root, is_file);
             if (is_file == false){
-                std::cout << "Error: " << args[1] << " is not a file." << std::endl;
+                fileSystem_.is_error = true;
+                fileSystem_.error_msg = "Error: " + args[1] + " is a directory";
+                std::cout << fileSystem_.error_msg << std::endl;
                 continue;
             }
             // 计算路径
@@ -187,12 +203,15 @@ void Console::run() {
             for (int i=0; i<path_list.size()-1; i++){
                 int id = curr_dir->getItemId(path_list[i]);
                 if (id == -1){
-                    std::cout << "Error: " << args[1] << " is not exist." << std::endl;
-                    continue;
+                    fileSystem_.is_error = true;
+                    fileSystem_.error_msg = "Error: " + path_list[i] + " is not exist.";
+                    break;
                 }
                 curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
             }
-            fileSystem_.closeFile(path_list[path_list.size()-1], curr_dir);
+            if (!fileSystem_.is_error){
+                fileSystem_.closeFile(path_list[path_list.size()-1], curr_dir);
+            }
         }
         else if (args[0] == "read"){
             if (args.size() != 2){
@@ -210,6 +229,10 @@ void Console::run() {
             }
              //输出文件内容到终端
             std::string f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
+            if (f == ""){
+                std::cout << "Error: " << args[1] << " is not exist." << std::endl;
+                continue;
+            }
             system("cls");//清空终端
             std::cout<<f;
             getchar();
@@ -232,6 +255,10 @@ void Console::run() {
             char a;
             // system("cls");
             f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
+            if (f == ""){
+                std::cout << "Error: " << args[1] << " is not exist." << std::endl;
+                continue;
+            }
             while(1)
             {
                 system("cls");
@@ -382,6 +409,10 @@ void Console::run() {
         else {
             std::cout << "Error: " << args[0] << " is not a command." << std::endl;
             continue;
+        }
+
+        if (fileSystem_.is_error){
+            std::cout << "Error: " << fileSystem_.error_msg << std::endl;
         }
     }
 }
