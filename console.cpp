@@ -4,22 +4,11 @@ void Console::run() {
     std::string cmd;
     std::vector<std::string> args;
     while (true){
+
         fileSystem_.is_error = false;
-        // 获取当前路径
-        // std::cout << fileSystem_.users.getInodeId() << std::endl;
-        std::string path;
+        writeMessage();
+        printPath();
         Directory *curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();
-        int id = curr_dir->getItemId(".");
-        int pid = curr_dir->getItemId("..");
-        while (pid != id){
-            // std::cout << id << " " << pid << std::endl;
-            curr_dir = fileSystem_.superBlock.iNodeList_.inode_[pid].getDir();
-            path = curr_dir->getFileName(id) + "/" + path;
-            id = curr_dir->getItemId(".");
-            pid = curr_dir->getItemId("..");
-        }
-        path = "/" + path;
-        std::cout << fileSystem_.users.curr_user_ << "@OS:" << path << "$ ";
 
         // 获取指令, 并分割参数
         std::getline(std::cin, cmd);
@@ -146,8 +135,8 @@ void Console::run() {
             }
         }
         else if (args[0] == "open"){
-            if (args.size() != 4){
-                std::cout << "Usage: open <path> <mode> <sign>" << std::endl;
+            if (args.size() != 3){
+                std::cout << "Usage: open <path> <mode>" << std::endl;
                 continue;
             }
             bool is_root, is_file;
@@ -176,7 +165,7 @@ void Console::run() {
                 curr_dir = fileSystem_.superBlock.iNodeList_.inode_[id].getDir();
             }
             if (!fileSystem_.is_error){
-                fileSystem_.openFile(path_list[path_list.size()-1], std::stoi(args[2]), std::stoi(args[3]), curr_dir);
+                fileSystem_.openFile(path_list[path_list.size()-1], std::stoi(args[2]), 0, curr_dir);
             }
         }
         else if (args[0] == "close"){
@@ -230,7 +219,7 @@ void Console::run() {
              //输出文件内容到终端
             std::string f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
             if (f == ""){
-                std::cout << "Error: " << args[1] << " is not exist." << std::endl;
+                std::cout << "Error: " << args[1] << std::endl;
                 continue;
             }
             system("cls");//清空终端
@@ -256,7 +245,7 @@ void Console::run() {
             // system("cls");
             f = fileSystem_.readFile(path_list[path_list.size()-1], 0);
             if (f == ""){
-                std::cout << "Error: " << args[1] << " is not exist." << std::endl;
+                std::cout << "Error: " << args[1] << std::endl;
                 continue;
             }
             while(1)
@@ -267,7 +256,9 @@ void Console::run() {
                 a=getche();
                 if(a=='\b')
                 {
-                    f.pop_back();
+                    if (f.size()){
+                        f.pop_back();
+                    }
                 }
                 else if(a==27)
                 {
@@ -282,9 +273,14 @@ void Console::run() {
                     f.push_back(a);
                 }
             }
-            fileSystem_.writeFile(path_list[path_list.size()-1], f);
-            system("cls");
-            std::cout<<path_list[path_list.size()-1]<<" has been written."<<std::endl;
+            if (fileSystem_.writeFile(path_list[path_list.size()-1], f)){
+                system("cls");
+                std::cout<<path_list[path_list.size()-1]<<" has been written."<<std::endl;
+            }
+            else {
+                system("cls");
+                std::cout<<"Error: "<<path_list[path_list.size()-1]<<" can't be written."<<std::endl;
+            }
         }
         else if (args[0] == "cd"){
             if (args.size() != 2){
@@ -438,4 +434,37 @@ std::vector<std::string> Console::splitPath(std::string path, bool &is_root, boo
         }
     }
     return path_list;
+}
+
+void Console::printPath(){
+    std::string path;
+    Directory *curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();
+    int id = curr_dir->getItemId(".");
+    int pid = curr_dir->getItemId("..");
+    while (pid != id){
+        // std::cout << id << " " << pid << std::endl;
+        curr_dir = fileSystem_.superBlock.iNodeList_.inode_[pid].getDir();
+        path = curr_dir->getFileName(id) + "/" + path;
+        id = curr_dir->getItemId(".");
+        pid = curr_dir->getItemId("..");
+    }
+    path = "/" + path;
+    std::cout << fileSystem_.users.curr_user_ << "@OS:" << path << "$ ";
+}
+
+void Console::writeMessage() {
+    Directory *curr_dir = fileSystem_.superBlock.iNodeList_.inode_[fileSystem_.users.getInodeId()].getDir();
+    std::ofstream msg("..\\debug\\message.txt");
+    for (auto iter = curr_dir->directory.begin(); iter != curr_dir->directory.end(); iter++){
+        msg << iter->first << " " << iter->second;
+        if (fileSystem_.superBlock.iNodeList_.inode_[iter->second].getType() == 0){
+            std::vector<int> block_list = fileSystem_.superBlock.iNodeList_.inode_[iter->second].getBlockId();
+            msg << " num of block: " << block_list.size() << " list: ";
+            for (auto iter2 = block_list.begin(); iter2 != block_list.end(); iter2++){
+                msg << *iter2 << " ";
+            }
+        }
+        msg << std::endl;
+    }
+    msg.close();
 }

@@ -43,7 +43,7 @@ void INode::updateFileSize() {
         file_size_ = content_.size();
     }
     else{
-        file_size_ = dir_.getSize();
+        file_size_ = dir_.getSize() - 2;
     }
 }
 
@@ -77,14 +77,14 @@ bool INode::addBlock(int block_id) {
 
 int INode::differ()
 {
-    int diff = 0;
-    if(type_ == 1){
-        diff = dir_.getSize() - file_size_;
+    int block_num = 0;
+    if (type_ == 0) {
+        block_num = (int)std::ceil((double)content_.size() / (double)BLOCK_SIZE);
     }
-    else{
-        diff = content_.size() - file_size_;
+    else {
+        block_num = dir_.getSize() / 16;
     }
-    return (int)std::ceil((double)diff / (double)BLOCK_SIZE);
+    return block_num - block_num_;
 }
 
 std::string INode::getUserName() {
@@ -204,4 +204,12 @@ bool INodeList::updateINode(int pos, INode inode) {
 
 INode& INodeList::getINode(int pos) {
     return inode_[pos];
+}
+
+std::vector<int> INode::getBlockId(){
+    return indexTable_.getIndexes();
+}
+
+std::vector<int> INodeList::getBlockId(int pos){
+    return inode_[pos].getBlockId();
 }

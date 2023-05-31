@@ -48,6 +48,7 @@ public:
     std::string getSetTime(); // 获取创建时间
     std::string getModTime(); // 获取修改时间
     std::string getTypeInfo();  // 获取文件类型
+    std::vector<int> getBlockId();  // 获取磁盘块id
 };
 
 class INodeList {
@@ -63,6 +64,7 @@ public:
     bool deleteINode(int pos); // 删除i结点
     bool updateINode(int pos, INode inode); // 更新i结点
     INode& getINode(int pos); // 获取i结点
+    std::vector<int> getBlockId(int pos);  // 获取磁盘块id
 };
 
 #endif //INODE_H

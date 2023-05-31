@@ -73,6 +73,10 @@ void SuperBlock::createFile(std::string filename, Directory* curr_dir, std::stri
     iNodeList_.addINode(INode(curr_user, 0, 0, 0, 0, curr_time, curr_time, ""), inode_id);
     // 添加到目录中
     curr_dir->addItem(filename, inode_id);
+
+    //  更新父目录的文件大小
+    iNodeList_.inode_[pid].updateFileSize();
+
     std::string err = "createFile: Create file successfully! " + filename;
     writeLog(err);
 }
@@ -157,6 +161,10 @@ void SuperBlock::createDir(std::string dirname, Directory* curr_dir, std::string
     iNodeList_.addINode(INode(curr_user, 1, 0, 0, 0, curr_time, curr_time, ""), inode_id);
     // 添加到目录中
     curr_dir->addItem(dirname, inode_id);
+
+    //  更新父目录的文件大小
+    iNodeList_.inode_[pid].updateFileSize();
+
     iNodeList_.inode_[inode_id].getDir()->init(inode_id, pid);
     std::string err = "createDir: Create directory successfully! " + dirname;
     writeLog(err);
@@ -261,6 +269,15 @@ bool FileSystem::openFile(std::string filename, int mode, int sign, Directory* c
         std::string error="openFile: You are not the author! " + filename;
         writeLog(error);
         return false;
+    }
+
+    if (userOpenList.find(users.curr_user_) != userOpenList.end()){
+        if (userOpenList[users.curr_user_].getFileId(inode_id) != -1){
+            //std::cout << "File has been opened!" << std::endl;
+            std::string error="openFile: File has been opened! " + filename;
+            writeLog(error);
+            return false;
+        }
     }
     
     // 判断是否为文件/目录
@@ -389,22 +406,29 @@ bool FileSystem::writeFile(std::string filename, std::string content){
     }
 
     // 写入
-    if (fileOpenList.getSign(file_id) == 0){    // 覆盖写入
-        superBlock.iNodeList_.inode_[inode_id].content_ = content;
-        fileOpenList.setSign(file_id, 1);
-        fileOpenList.setOffSet(file_id, content.size());
-    }
-    else{   // 追加写入
-        int offset = fileOpenList.getOffSet(file_id);
-        fileOpenList.setOffSet(file_id, offset + content.size());
-        std::string tmp1 = superBlock.iNodeList_.inode_[inode_id].content_.substr(0, offset);
-        std::string tmp2 = superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, superBlock.iNodeList_.inode_[inode_id].content_.size() - offset);
-        superBlock.iNodeList_.inode_[inode_id].content_ = tmp1 + content + tmp2;
-    }
+    superBlock.iNodeList_.inode_[inode_id].content_ = content;
+    // 获取当前时间
+    auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&t), "%Y-%m-%d-%H:%M:%S");
+    std::string curr_time = ss.str();
+    superBlock.iNodeList_.inode_[inode_id].mod_time_ = curr_time;
+    fileOpenList.setSign(file_id, 1);
+    fileOpenList.setOffSet(file_id, content.size());
+    // if (fileOpenList.getSign(file_id) == 0){    // 覆盖写入
+        
+    // }
+    // else{   // 追加写入
+    //     int offset = fileOpenList.getOffSet(file_id);
+    //     fileOpenList.setOffSet(file_id, offset + content.size());
+    //     std::string tmp1 = superBlock.iNodeList_.inode_[inode_id].content_.substr(0, offset);
+    //     std::string tmp2 = superBlock.iNodeList_.inode_[inode_id].content_.substr(offset, superBlock.iNodeList_.inode_[inode_id].content_.size() - offset);
+    //     superBlock.iNodeList_.inode_[inode_id].content_ = tmp1 + content + tmp2;
+    // }
 
     // 分配磁盘块
-    int differ = superBlock.iNodeList_.inode_[inode_id].differ();
     superBlock.iNodeList_.inode_[inode_id].updateFileSize();
+    int differ = superBlock.iNodeList_.inode_[inode_id].differ();
     while(differ > 0){
         int block_id = superGroup.getFreeBlock();
         superBlock.iNodeList_.inode_[inode_id].addBlock(block_id);
@@ -515,6 +539,10 @@ void FileSystem::format() {
     users.userList_.clear();
     users.curr_user_ = "root";
     users.createUser("root", "123");
+    int inode_id = superBlock.iNodeList_.getFreeINode();
+    superBlock.iNodeList_.addINode(INode("root", 1, 0, 0, 0, "2023-5-28-15:47:12", "2023-5-28-15:47:12", ""), inode_id);
+    users.setInodeId(inode_id);
+    superBlock.iNodeList_.inode_[inode_id].getDir()->init(inode_id, inode_id);
     userOpenList.clear();
     fileOpenList.clear();
     std::string err = "format: Format successfully!";
