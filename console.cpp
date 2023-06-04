@@ -310,14 +310,15 @@ void Console::run() {
                 continue;
             }
         }
-        else if (args[0] == "rm"){
-            if (args.size() != 2){
-                std::cout << "Usage: rm <path>" << std::endl;
-                continue;
-            }
-            // TODO 支持递归删除目录 
-
-        }
+        // else if (args[0] == "rm"){
+        //     if (args.size() != 2){
+        //         std::cout << "Usage: rm <path>" << std::endl;
+        //         continue;
+        //     }
+        //     bool is_root, is_file;
+        //     std::vector<std::string> path_list = splitPath(args[1], is_root, is_file);
+        //     fileSystem_.rm(path_list, is_root);
+        // }
         else if (args[0] == "login"){
             if (args.size() != 3){
                 std::cout << "Usage: login <username> <password>" << std::endl;

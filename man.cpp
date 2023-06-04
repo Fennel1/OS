@@ -4,7 +4,7 @@ void Help::help(){
     std::cout << "Usage of all commands:" << std::endl;
     std::cout << "create   :create <path>" << std::endl;
     std::cout << "delete   :delete <path>" << std::endl;
-    std::cout << "open     :open <path> <mode> <sign>" << std::endl;
+    std::cout << "open     :open <path> <mode>" << std::endl;
     std::cout << "close    :close <path>" << std::endl;
     std::cout << "read     :read <path> <len>" << std::endl;
     std::cout << "write    :write <path>" << std::endl;
@@ -32,7 +32,7 @@ void Help::man(std::string command){
         std::cout << "Delete a existed file or catalog" << std::endl;
     }
     else if(command == "open"){
-        std::cout << "Usage: open <path> <mode> <sign>" << std::endl;
+        std::cout << "Usage: open <path> <mode>" << std::endl;
         std::cout << "Open a file" << std::endl;
     }
     else if(command == "close"){

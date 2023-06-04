@@ -235,3 +235,163 @@
 2023-05-31 14:44:35: ls: List directory successfully!
 2023-05-31 14:45:13: deleteFile: Delete file successfully! a
 2023-05-31 14:45:14: ls: List directory successfully!
+2023-06-01 13:22:00: ls: List directory successfully!
+2023-06-01 13:22:05: createFile: Create file successfully! a
+2023-06-01 13:22:06: ls: List directory successfully!
+2023-06-01 13:23:51: ls: List directory successfully!
+2023-06-01 13:23:55: readFile: You have not opened this file! a
+2023-06-01 13:24:05: openFile: Open file successfully! a
+2023-06-01 13:24:08: readFile: Read file successfully! a
+2023-06-01 13:24:12: writeFile: Write file successfully! a
+2023-06-01 13:24:14: ls: List directory successfully!
+2023-06-01 13:24:21: createDir: Create directory successfully! b
+2023-06-01 13:24:21: createFile: Create file successfully! c
+2023-06-01 13:24:25: ls: List directory successfully!
+2023-06-01 13:24:40: cd: No such directory! b	
+2023-06-01 13:24:43: cd: Change directory successfully! b
+2023-06-01 13:24:48: cd: Change directory successfully! ..
+2023-06-01 13:24:57: openFile: No such file! d
+2023-06-01 13:25:01: cd: No such directory! b	
+2023-06-01 13:25:31: ls: List directory successfully!
+2023-06-01 13:25:35: openFile: No such file! d
+2023-06-01 13:29:01: cd: No such directory! b	
+2023-06-01 13:29:02: ls: List directory successfully!
+2023-06-01 13:29:11: cd: Change directory successfully! b
+2023-06-01 13:29:27: deleteFile: No such file! d
+2023-06-01 13:29:35: cd: Change directory successfully! ..
+2023-06-01 13:29:40: openFile: Open file successfully! c
+2023-06-01 13:29:53: save: Save successfully!
+2023-06-01 13:30:00: ls: List directory successfully!
+2023-06-01 13:30:02: format: Format successfully!
+2023-06-01 13:30:02: load: Load successfully!
+2023-06-01 13:30:03: ls: List directory successfully!
+2023-06-01 13:30:15: cd: Change directory successfully! ..
+2023-06-01 13:30:18: cd: Change directory successfully! b
+2023-06-01 13:30:19: ls: List directory successfully!
+2023-06-01 13:30:24: ls: List directory successfully!
+2023-06-01 13:31:45: createFile: Create file successfully! a
+2023-06-01 13:31:48: createDir: Create directory successfully! b
+2023-06-01 13:31:48: createFile: Create file successfully! c
+2023-06-01 13:32:06: ls: List directory successfully!
+2023-06-01 13:32:12: openFile: Open file successfully! a
+2023-06-01 13:32:17: readFile: Read file successfully! a
+2023-06-01 13:32:22: writeFile: Write file successfully! a
+2023-06-01 13:32:26: ls: List directory successfully!
+2023-06-01 13:32:29: closeFile: Close file successfully! a
+2023-06-01 13:32:34: readFile: You have not opened this file! a
+2023-06-01 13:32:36: readFile: You have not opened this file! a
+2023-06-01 13:32:42: openFile: Open file successfully! a
+2023-06-01 13:32:43: readFile: Read file successfully! a
+2023-06-01 13:32:47: writeFile: The file is read only! a
+2023-06-01 13:32:53: ls: List directory successfully!
+2023-06-01 13:34:57: closeFile: It's a directory! b
+2023-06-01 13:41:54: ls: List directory successfully!
+2023-06-01 13:42:04: cd: Change directory successfully! b
+2023-06-01 13:42:09: ls: List directory successfully!
+2023-06-01 13:42:41: ls: List directory successfully!
+2023-06-01 13:42:48: createFile: Create file successfully! kim
+2023-06-01 13:43:05: ls: List directory successfully!
+2023-06-01 13:43:10: openFile: You are not the author! kim
+2023-06-01 13:43:15: readFile: You are not the author! kim
+2023-06-01 13:43:32: deleteFile: You are not the author! kim
+2023-06-01 13:46:35: ls: List directory successfully!
+2023-06-01 13:46:43: ls: List directory successfully!
+2023-06-01 13:51:35: ls: List directory successfully!
+2023-06-01 13:51:45: createDir: Create directory successfully! bb
+2023-06-01 13:51:45: createDir: Create directory successfully! bbb
+2023-06-01 13:51:45: createDir: Create directory successfully! bb
+2023-06-01 13:51:45: createFile: Create file successfully! bb
+2023-06-01 13:51:59: cd: Change directory successfully! bb
+2023-06-01 13:51:59: cd: Change directory successfully! bbb
+2023-06-01 13:52:03: cd: Change directory successfully! ..
+2023-06-01 13:52:07: cd: Change directory successfully! ..
+2023-06-01 13:53:22: cd: Change directory successfully! bb
+2023-06-01 13:53:22: cd: Change directory successfully! bbb
+2023-06-01 13:53:22: cd: Change directory successfully! bb
+2023-06-01 13:53:23: ls: List directory successfully!
+2023-06-01 13:53:29: cd: Change directory successfully! ..
+2023-06-01 13:53:30: ls: List directory successfully!
+2023-06-01 13:53:36: deleteFile: It's a directory! bb
+2023-06-01 13:53:43: deleteDir: Directory is not empty! bb
+2023-06-01 13:53:47: cd: Change directory successfully! ..
+2023-06-01 13:53:52: deleteFile: No such file! bb
+2023-06-01 13:53:56: deleteFile: It's a directory! bbb
+2023-06-01 13:54:05: cd: Change directory successfully! bbb
+2023-06-01 13:54:07: ls: List directory successfully!
+2023-06-01 13:54:12: cd: Change directory successfully! bb
+2023-06-01 13:54:14: ls: List directory successfully!
+2023-06-01 13:54:22: deleteFile: Delete file successfully! bb
+2023-06-01 13:54:24: cd: Change directory successfully! ..
+2023-06-01 13:54:31: deleteDir: Delete directory successfully! bb
+2023-06-01 13:54:34: cd: Change directory successfully! ..
+2023-06-01 13:54:35: ls: List directory successfully!
+2023-06-01 13:54:38: cd: Change directory successfully! bbb
+2023-06-01 13:54:41: ls: List directory successfully!
+2023-06-01 14:38:26: save: Save successfully!
+2023-06-01 14:50:39: ls: List directory successfully!
+2023-06-01 14:50:55: createFile: Create file successfully! a
+2023-06-01 14:51:21: createDir: Create directory successfully! b
+2023-06-01 14:51:21: createFile: Create file successfully! c
+2023-06-01 14:51:24: ls: List directory successfully!
+2023-06-01 14:51:31: cd: Change directory successfully! b
+2023-06-01 14:51:33: ls: List directory successfully!
+2023-06-01 14:51:54: openFile: Open file successfully! c
+2023-06-01 14:52:01: readFile: Read file successfully! c
+2023-06-01 14:52:09: writeFile: Write file successfully! c
+2023-06-01 14:52:13: readFile: Read file successfully! c
+2023-06-01 14:52:21: writeFile: Write file successfully! c
+2023-06-01 14:52:23: ls: List directory successfully!
+2023-06-01 14:52:30: cd: Change directory successfully! ..
+2023-06-01 14:52:31: ls: List directory successfully!
+2023-06-01 14:52:41: cd: Change directory successfully! b
+2023-06-01 14:52:43: cd: Change directory successfully! ..
+2023-06-01 14:52:50: deleteDir: Directory is not empty! b
+2023-06-01 14:52:57: cd: Change directory successfully! b
+2023-06-01 14:53:10: closeFile: Close file successfully! c
+2023-06-01 14:53:15: readFile: You have not opened this file! c
+2023-06-01 14:53:20: readFile: You have not opened this file! c
+2023-06-01 14:53:29: openFile: Open file successfully! c
+2023-06-01 14:53:32: readFile: Read file successfully! c
+2023-06-01 14:53:39: readFile: Read file successfully! c
+2023-06-01 14:53:43: writeFile: The file is read only! c
+2023-06-01 14:53:45: ls: List directory successfully!
+2023-06-01 14:53:53: deleteFile: Delete file successfully! c
+2023-06-01 14:53:55: ls: List directory successfully!
+2023-06-01 14:53:57: cd: Change directory successfully! ..
+2023-06-01 14:54:07: deleteDir: Delete directory successfully! b
+2023-06-01 14:55:10: createFile: File already exists! a
+2023-06-01 14:55:11: ls: List directory successfully!
+2023-06-01 14:55:23: createFile: Create file successfully! b
+2023-06-01 14:55:23: ls: List directory successfully!
+2023-06-01 14:55:43: openFile: You are not the author! b
+2023-06-01 14:56:59: save: Save successfully!
+2023-06-01 14:57:07: format: Format successfully!
+2023-06-01 14:57:07: load: Load successfully!
+2023-06-01 14:57:08: ls: List directory successfully!
+2023-06-01 14:57:20: format: Format successfully!
+2023-06-01 14:57:21: ls: List directory successfully!
+2023-06-01 14:57:34: createFile: Create file successfully! a
+2023-06-01 14:57:35: ls: List directory successfully!
+2023-06-01 14:57:44: ls: List directory successfully!
+2023-06-03 21:44:09: createFile: Create file successfully! a
+2023-06-03 21:44:12: ls: List directory successfully!
+2023-06-03 21:44:15: openFile: Open file successfully! a
+2023-06-03 21:44:18: ls: List directory successfully!
+2023-06-03 21:44:33: readFile: Read file successfully! a
+2023-06-03 21:44:36: writeFile: Write file successfully! a
+2023-06-03 21:44:48: readFile: Read file successfully! a
+2023-06-03 21:45:09: createDir: Create directory successfully! b
+2023-06-03 21:45:09: createDir: Create directory successfully! c
+2023-06-03 21:45:09: createFile: Create file successfully! d
+2023-06-03 21:45:10: ls: List directory successfully!
+2023-06-03 21:45:23: cd: Change directory successfully! b
+2023-06-03 21:45:23: cd: No such directory! d
+2023-06-03 21:45:27: cd: Change directory successfully! ..
+2023-06-03 21:45:32: cd: Change directory successfully! b
+2023-06-03 21:45:32: cd: Change directory successfully! c
+2023-06-03 21:45:36: ls: List directory successfully!
+2023-06-03 21:45:53: deleteFile: Delete file successfully! d
+2023-06-03 21:45:54: ls: List directory successfully!
+2023-06-03 21:46:21: ls: List directory successfully!
+2023-06-03 21:46:30: createFile: Create file successfully! kim
+2023-06-03 21:46:31: ls: List directory successfully!

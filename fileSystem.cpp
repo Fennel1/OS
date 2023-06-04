@@ -154,7 +154,7 @@ void SuperBlock::createDir(std::string dirname, Directory* curr_dir, std::string
     // 获取当前时间
     auto t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    ss << std::put_time(std::localtime(&t), "%Y-%m-%d-%H:%M:%S");
     std::string curr_time = ss.str();
 
     // 创建inode, 并添加到inode表中
@@ -635,3 +635,31 @@ void FileSystem::load(){
     std::string err = "load: Load successfully!";
     writeLog(err);
 }
+
+// void FileSystem::rm(std::vector<std::string> path_list, bool is_root) {
+//     int temp_inode_id = users.getInodeId();
+//     if(is_root){
+//        users.setInodeId(0);
+//     }
+//     for (int i=0; i<path_list.size(); i++){
+//        cd(path_list[i]);
+//     }
+//     Directory *curr_dir = superBlock.iNodeList_.inode_[users.getInodeId()].getDir();
+//     for (auto iter = curr_dir->directory.begin(); iter != curr_dir->directory.end(); iter++){
+//         if(iter->first == "." || iter->first == ".."){
+//             continue;
+//         }
+//         if (superBlock.iNodeList_.inode_[iter->second].getType() == 1){
+//             std::vector<std::string> temp_path_list;
+//             temp_path_list.push_back(iter->first);
+//             rm(temp_path_list, false);
+//         }
+//         else if(superBlock.iNodeList_.inode_[iter->second].getType() == 0){
+//             curr_dir->deleteItem(iter->first);
+//         }
+//         else{
+//             std::cout << "rm error!" << std::endl;
+//         }
+//     }
+//     users.setInodeId(temp_inode_id);   
+// }

@@ -19,7 +19,6 @@
 class SuperBlock {
 private:
 
-
 public:
     INodeList iNodeList_;   // i结点表
     SuperBlock();
@@ -55,6 +54,7 @@ public:
     void ls();  // 显示当前目录下的文件
     void ls(std::string path);   // 显示指定目录下的文件
     void rm(std::string path, Directory* curr_dir);  // 递归删除目录
+    void rm(std::vector<std::string> path_list, bool is_root);   // 递归删除
     void format();  // 格式化文件系统
     void save();    // 保存文件系统
     void load();    // 加载文件系统
